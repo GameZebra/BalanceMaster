@@ -1,0 +1,139 @@
+# Prerequisites
+*.d
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Linker output
+*.ilk
+*.map
+*.exp
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Kernel Module Compile Results
+*.mod*
+*.cmd
+.tmp_versions/
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf
+
+# STM32 CUBE IDE metatdata (I don't know if it is important or not)
+.metadata/
+RemoteSystemsTempFiles/
+.settings/
+Debug/
+*.launch
+
+# STM32 git ignore (whatever that means)
+
+*.mxproject
+
+
+
+# MATLAB
+*.mat
+*.asv
+*.figs
+*.temp
+
+# Simulink
+slprj/
+*.slx.*
+*.slxc
+*.slxc.*
+*.autosave
+
+# Simulink cache
+simulink.cache/
+simulink_generated_blocks.mat
+
+# MATLAB code analyzer files
+*.mexa64
+*.mexw64
+*.mexmaci64
+
+# Compiled MATLAB
+*.p
+*.mex*
+*.ctf
+
+# Simulink logs
+simulink*.log
+
+# Temporary files
+slprj/_sfprj
+slprj/_sfbkup
+slprj/_tmatprj
+
+# Simulink diagnostic files
+*.tmw
+
+# Simulink data files
+*.md5
+*.xlf
+*.harnessresults
+*.xml
+*.merlin
+
+# Other temporary files
+*.bak
+*.scc
+
+# Simulink Stateflow temporary files
+sldv/
+sfprj/
+sfdebug/
+slccprj/
+
+# Simulink slprj temporary files
+slprj/sim_stateflow/
+
+# Simulink generated files
+slprj/simulinkautosave/
+slprj/raccel/
+slprj/mrsdata/
+
+# MATLAB profiler output
+profile_info/
+profile_results/
+
+# MATLAB Simulink Cache
+SimulinkOnramp/
+MATLABCodingOnramp/
+
+# Word backup files
+~*
