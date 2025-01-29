@@ -1,7 +1,7 @@
 %% Reading data from the com port
 
 % Define COM port and baud rate
-comPort = "COM3";  % Change this to your actual port
+comPort = "COM10";  % Change this to your actual port
 baudRate = 115200;  % Adjust according to your device
 
 % Open the serial port
