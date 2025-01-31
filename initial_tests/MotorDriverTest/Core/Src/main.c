@@ -106,7 +106,7 @@ int main(void)
 	HAL_UART_Transmit(&huart2, &i, 1, 20);
     i++;
     HAL_Delay(200);
-	/* USER CODE END WHILE */
+    /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   }
@@ -169,7 +169,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
+  huart2.Init.BaudRate = 38400;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
