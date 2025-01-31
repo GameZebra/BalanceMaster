@@ -51,6 +51,8 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
+void printNumber(uint8_t *num);
+
 
 /* USER CODE END PFP */
 
@@ -70,6 +72,7 @@ int main(void)
   uint8_t command = 0x8D;
   uint8_t data = 0x7F;
   uint8_t i = 0;
+  uint8_t *point = &i;
 
   /* USER CODE END 1 */
 
@@ -103,9 +106,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	HAL_UART_Transmit(&huart2, &i, 1, 20);
-    i++;
-    HAL_Delay(200);
+	printNumber(point);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -205,6 +206,11 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void printNumber(uint8_t *num){
+	HAL_UART_Transmit(&huart2, num, 1, 20);
+    (*num)++;
+    HAL_Delay(200);
+}
 
 /* USER CODE END 4 */
 
