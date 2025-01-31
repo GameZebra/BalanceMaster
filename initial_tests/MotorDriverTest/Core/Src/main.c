@@ -69,7 +69,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-  uint8_t command = 0x8D;
+  uint8_t command = 0x88;
   uint8_t data = 0x7F;
   uint8_t i = 0;
   uint8_t *point = &i;
@@ -97,16 +97,23 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
-
+ //M1 forward max
   HAL_UART_Transmit(&huart2, &command, 1, 20);
   HAL_UART_Transmit(&huart2, &data, 1, 20);
+  HAL_Delay(1000);
+
+  HAL_UART_Transmit(&huart2, 0x86, 1, 20);
+  HAL_UART_Transmit(&huart2, 127, 1, 20);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	printNumber(point);
+	//printNumber(point);
+
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
