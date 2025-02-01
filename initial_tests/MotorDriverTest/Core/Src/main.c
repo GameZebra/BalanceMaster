@@ -102,6 +102,7 @@ int main(void)
   HAL_UART_Transmit(&huart2, &data, 1, 20);
   HAL_Delay(1000);
 
+  //M1 brak max
   HAL_UART_Transmit(&huart2, 0x86, 1, 20);
   HAL_UART_Transmit(&huart2, 127, 1, 20);
 
