@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "qik_2s12v10_lib.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -43,7 +43,7 @@
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-
+uint8_t state = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -65,11 +65,11 @@ static void MX_USART2_UART_Init(void);
   */
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
-  uint8_t m0Forward = 0x88;
-  uint8_t m0Brake = 0x86;
-  uint8_t maxSpeed = 127;
 
+  /* USER CODE BEGIN 1 */
+  uint8_t test = m0Forward;
+  uint8_t testBrake = m0Brake;
+  uint8_t brake = 0;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -99,10 +99,26 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  for(uint8_t i = 0; i< maxSpeed; i+=10 ){
-		  HAL_UART_Transmit(&huart2, &m0Forward, 1, 20);
-		  HAL_UART_Transmit(&huart2, &i, 1, 20);
-		  HAL_Delay(100);
+	  if(state){
+		  for(uint8_t i = 0; i< maxSpeed; i+=10 ){
+		  		  HAL_UART_Transmit(&huart2, &test, 1, 20);
+		  		  HAL_UART_Transmit(&huart2, &i, 1, 20);
+		  		  HAL_Delay(500);
+	  	  }
+		  HAL_UART_Transmit(&huart2, &testBrake, 1, 20);
+		  HAL_UART_Transmit(&huart2, &brake, 1, 20);
+		  brake+=20;
+		  if (brake > maxBrake){
+			  brake = maxBrake;
+		  }
+		  for(uint8_t i = maxSpeed; i>= 10; i-=10 ){
+			  HAL_UART_Transmit(&huart2, m1Forward, 1, 20);
+			  HAL_UART_Transmit(&huart2, &i, 1, 20);
+			  HAL_Delay(500);
+		  }
+		  HAL_UART_Transmit(&huart2, m1Brake, 1, 20);
+		  HAL_UART_Transmit(&huart2, &brake, 1, 20);
+
 	  }
 
     /* USER CODE END WHILE */
@@ -168,7 +184,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
+  huart2.Init.BaudRate = 38400;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -192,6 +208,7 @@ static void MX_USART2_UART_Init(void)
   */
 static void MX_GPIO_Init(void)
 {
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
 /* USER CODE BEGIN MX_GPIO_Init_1 */
 /* USER CODE END MX_GPIO_Init_1 */
 
@@ -199,12 +216,31 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
 
+  /*Configure GPIO pin : PA0 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
 
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  /* Prevent unused argument(s) compilation warning */
+  UNUSED(GPIO_Pin);
+  /* NOTE: This function Should not be modified, when the callback is needed,
+           the HAL_GPIO_EXTI_Callback could be implemented in the user file
+   */
+  state ^= 0x1;
+}
 /* USER CODE END 4 */
 
 /**
