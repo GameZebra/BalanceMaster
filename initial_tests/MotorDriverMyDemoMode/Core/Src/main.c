@@ -67,8 +67,8 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-  uint8_t test = m0Forward;
-  uint8_t testBrake = m0Brake;
+  uint8_t motor0[3] = {m0Forward, m0Brake, m0Reverse};
+  uint8_t motor1[3] = {m1Reverese, m1Brake, m1Forward};
   uint8_t brake = 0;
   /* USER CODE END 1 */
 
@@ -101,22 +101,22 @@ int main(void)
   {
 	  if(state){
 		  for(uint8_t i = 0; i< maxSpeed; i+=10 ){
-		  		  HAL_UART_Transmit(&huart2, &test, 1, 20);
+		  		  HAL_UART_Transmit(&huart2, &motor0[0], 1, 20);
 		  		  HAL_UART_Transmit(&huart2, &i, 1, 20);
 		  		  HAL_Delay(500);
 	  	  }
-		  HAL_UART_Transmit(&huart2, &testBrake, 1, 20);
+		  HAL_UART_Transmit(&huart2, &motor0[1], 1, 20);
 		  HAL_UART_Transmit(&huart2, &brake, 1, 20);
 		  brake+=20;
 		  if (brake > maxBrake){
 			  brake = maxBrake;
 		  }
 		  for(uint8_t i = maxSpeed; i>= 10; i-=10 ){
-			  HAL_UART_Transmit(&huart2, m1Forward, 1, 20);
+			  HAL_UART_Transmit(&huart2, &motor1[0], 1, 20);
 			  HAL_UART_Transmit(&huart2, &i, 1, 20);
 			  HAL_Delay(500);
 		  }
-		  HAL_UART_Transmit(&huart2, m1Brake, 1, 20);
+		  HAL_UART_Transmit(&huart2, &motor1[1], 1, 20);
 		  HAL_UART_Transmit(&huart2, &brake, 1, 20);
 
 	  }
