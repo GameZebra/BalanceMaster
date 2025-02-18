@@ -49,9 +49,11 @@ UART_HandleTypeDef huart2;
 /* USER CODE BEGIN PV */
 float angle = 0;
 float angularVelocity = 0;
+float measuredVoltage = 0;
 uint16_t adcValue = 0;
 uint16_t adcMin = 3000;
 uint16_t adcMax = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -111,7 +113,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	angularVelocity = ((adcValue - 2056)/4095.0)*150; // degrees/ time
+	measuredVoltage = (adcValue / 4095.0)*2.9;
+	angularVelocity = (measuredVoltage - 1.47)/0.01375/2; // degrees/ time
+									//null voltage	  because it seams wright
 	angle += angularVelocity * 0.0001;
 	if (adcValue < adcMin)
 		adcMin = adcValue;
