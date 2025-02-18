@@ -115,7 +115,7 @@ int main(void)
   {
 	measuredVoltage = (adcValue / 4095.0)*2.9;
 	angularVelocity = (measuredVoltage - 1.47)/0.01375/2; // degrees/ time
-									//null voltage	  because it seams wright
+							//null correction /voltage / sensitivity  because it seams right
 	if (angularVelocity > 0.7 || angularVelocity < -0.7){
 		angle += angularVelocity * 0.0001; // 1/10 000 s
 	}
