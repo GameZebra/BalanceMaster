@@ -116,7 +116,9 @@ int main(void)
 	measuredVoltage = (adcValue / 4095.0)*2.9;
 	angularVelocity = (measuredVoltage - 1.47)/0.01375/2; // degrees/ time
 									//null voltage	  because it seams wright
-	angle += angularVelocity * 0.0001;
+	if (angularVelocity > 0.7 || angularVelocity < -0.7){
+		angle += angularVelocity * 0.0001; // 1/10 000 s
+	}
 	if (adcValue < adcMin)
 		adcMin = adcValue;
 	else if (adcValue > adcMax)
