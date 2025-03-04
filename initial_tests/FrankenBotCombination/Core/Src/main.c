@@ -480,6 +480,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 }
 
 
+void myFunc(){
+	test+=1;
+}
+
+
 
 /* USER CODE END 4 */
 

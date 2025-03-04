@@ -208,7 +208,8 @@ void TIM1_UP_TIM10_IRQHandler(void)
   /* USER CODE END TIM1_UP_TIM10_IRQn 0 */
   HAL_TIM_IRQHandler(&htim10);
   /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 1 */
-  HAL_TIM_PeriodElapsedCallback(&htim10);
+  myFunc();
+  //HAL_TIM_PeriodElapsedCallback(&htim10);
   /* USER CODE END TIM1_UP_TIM10_IRQn 1 */
 }
 
