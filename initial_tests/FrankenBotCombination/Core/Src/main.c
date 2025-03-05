@@ -22,6 +22,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+#include "qik_2s12v10_lib.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,7 +53,7 @@ TIM_HandleTypeDef htim10;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-uint8_t test = 10;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -80,7 +82,9 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+  uint8_t motor0[3] = {m0Forward, m0Brake, m0Reverse};
+  uint8_t motor1[3] = {m1Reverese, m1Brake, m1Forward};
+  uint8_t brake = 0;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -476,12 +480,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* NOTE : This function should not be modified, when the callback is needed,
             the HAL_TIM_PeriodElapsedCallback could be implemented in the user file
    */
-  test+=1;
-}
-
-
-void myFunc(){
-	test+=1;
 }
 
 
