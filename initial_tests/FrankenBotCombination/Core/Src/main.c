@@ -33,6 +33,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define ACCEL_CS_LOW()   HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET)  // Chip Select LOW
+#define ACCEL_CS_HIGH()  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET)    // Chip Select HIGH
 
 /* USER CODE END PD */
 
@@ -54,12 +56,32 @@ TIM_HandleTypeDef htim10;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-
+// Motor driver commands (UART)
 uint8_t const motor0[3] = {m0Forward, m0Brake, m0Reverse};
 uint8_t const motor1[3] = {m1Reverese, m1Brake, m1Forward};
+
+// Gyro
 uint8_t rotation = 0;
 uint8_t value = 0;
 uint8_t test = 0;
+
+// Accelerometer
+uint8_t reg = 0x0F | 0x80;  // WHO_AM_I register (0x0F) with read bit (0x80)
+uint8_t id = 0x0;
+uint8_t accReg [6] = {0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D};
+int16_t accX = 0;
+int16_t accY = 0;
+int16_t accZ = 0;
+double accValues[3];
+
+uint8_t isEnabled = 0;
+uint8_t enableAcc[2] = {0x20, 0x67};
+uint8_t enableDRY[2] = {0x23, 0xC8};
+uint8_t status = 0;
+uint8_t data[6];
+uint8_t const range = 2;
+
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -563,6 +585,26 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 
   test+=1;
 }
+
+void readAccelerometer(){
+	for(short i = 0; i<6; i++){
+		msg = accReg[i] | 0x80;
+		ACCEL_CS_LOW();                  // Enable SPI communication
+		HAL_SPI_Transmit(&hspi1, &msg, 1, HAL_MAX_DELAY);  // Send register address
+		HAL_SPI_Receive(&hspi1, &data[i], 1, HAL_MAX_DELAY);    // Receive the ID
+		ACCEL_CS_HIGH();                 // Disable SPI
+		HAL_Delay(10);
+
+	}
+	accX = (data[0] | (data[1] << 8));
+	accY = (data[2] | (data[3] << 8));
+	accZ = (data[4] | (data[5] << 8));
+
+	accValues[0] = (accX / 32767.0) * 2;
+	accValues[1] = (accY / 32767.0) * 2;
+	accValues[2] = (accZ / 32767.0) * 2;
+}
+
 
 /* USER CODE END 4 */
 
