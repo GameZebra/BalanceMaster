@@ -124,8 +124,8 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim10);
 
   // ADC gyro read
-  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 100);
-  HAL_TIM_Base_Start(&htim1);
+  //__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 100);
+  HAL_TIM_Base_Start(&htim8);
   HAL_ADC_Start_IT(&hadc1);
 
   /* USER CODE END 2 */
@@ -392,7 +392,7 @@ static void MX_TIM8_Init(void)
   htim8.Instance = TIM8;
   htim8.Init.Prescaler = 8;
   htim8.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim8.Init.Period = 65535;
+  htim8.Init.Period = 100;
   htim8.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim8.Init.RepetitionCounter = 0;
   htim8.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -435,7 +435,7 @@ static void MX_TIM10_Init(void)
 
   /* USER CODE END TIM10_Init 1 */
   htim10.Instance = TIM10;
-  htim10.Init.Prescaler = 8000;
+  htim10.Init.Prescaler = 8;
   htim10.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim10.Init.Period = 100;
   htim10.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
