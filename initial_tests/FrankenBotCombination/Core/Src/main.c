@@ -587,13 +587,13 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 }
 
 void readAccelerometer(){
+	uint8_t msg;
 	for(short i = 0; i<6; i++){
 		msg = accReg[i] | 0x80;
 		ACCEL_CS_LOW();                  // Enable SPI communication
 		HAL_SPI_Transmit(&hspi1, &msg, 1, HAL_MAX_DELAY);  // Send register address
 		HAL_SPI_Receive(&hspi1, &data[i], 1, HAL_MAX_DELAY);    // Receive the ID
 		ACCEL_CS_HIGH();                 // Disable SPI
-		HAL_Delay(10);
 
 	}
 	accX = (data[0] | (data[1] << 8));
