@@ -69,6 +69,7 @@ Comments are useful for notes or metadata.
 ```python
 print("Syntax highlighting!")
 ```
+````
 
 
 ## **6. Tables**  
