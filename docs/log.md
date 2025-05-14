@@ -15,3 +15,9 @@
 - 🔧 Made a power rail with buck convertors to stabilize the power
 ![power rail](/media/power_rail.jpeg "the upper side of the power rail")  
 
+## 📅 May 14, 2025
+- :page_facing_up: fixed prior log data
+- 🔍 retested gyro
+- 🔧 created gyro board and fited it to the robot
+![gyroscope board](/media/gyroscope_board.jpeg "gyroscope board")  
+
