@@ -19,5 +19,6 @@
 - :page_facing_up: fixed prior log data
 - 🔍 retested gyro
 - 🔧 created gyro board and fited it to the robot
-![gyroscope board](/media/gyroscope_board.jpeg "gyroscope board")  
+![gyroscope board](/media/gyroscope_board.jpeg "gyroscope board") 
+- :page_facing_up: to the user data file created on the tablet
 
