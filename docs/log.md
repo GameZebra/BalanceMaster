@@ -22,3 +22,14 @@
 ![gyroscope board](/media/gyroscope_board.jpeg "gyroscope board") 
 - :page_facing_up: to the user data file created on the tablet
 
+## 📅 May 15, 2025
+- :page_facing_up: created pinout for the project + future improvements
+- 🔍 retested gyro on 3V (because the stm32f407 board can read with the ADC up to 3V)
+- 🔧 fixed the gyro board to output 3V
+- 🔧 created MCU board and fited it to the robot
+    - used multitool for the first time
+![MCU board](/media/MCU_board.jpeg "MCU board") 
+- :page_facing_up: created doc file for the board shield on the tablet
+- 🤖 robot hardware done
+![robot upgrade done](/media/robot_upgrade_done.jpeg "robot upgrade done") 
+
