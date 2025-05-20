@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "math.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -59,6 +60,9 @@ uint8_t enableDRY[2] = {0x23, 0xC8};
 uint8_t status = 0;
 uint8_t data[6];
 uint8_t const range = 2;
+
+
+double angleData, angleValue;
 
 /* USER CODE END PV */
 
@@ -174,6 +178,10 @@ int main(void)
 	accValues[0] = (accX / 32767.0) * 2;
 	accValues[1] = (accY / 32767.0) * 2;
 	accValues[2] = (accZ / 32767.0) * 2;
+
+	angleData = atan(accX/accZ)*180/M_PI;
+	angleValue = atan(accValues[0]/accValues[2])*180/M_PI;
+
 	HAL_Delay(10);
 
     /* USER CODE END WHILE */
