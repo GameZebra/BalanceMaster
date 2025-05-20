@@ -62,9 +62,28 @@ UART_HandleTypeDef huart2;
 // Motor driver commands (UART)
 uint8_t const motor0[3] = {m0Forward, m0Brake, m0Reverse};
 uint8_t const motor1[3] = {m1Reverese, m1Brake, m1Forward};
+uint8_t rotation = 0;
+uint8_t speed = 0;
+
+// PID constants
+float Kp = 2.0f;
+float Ki = 0.5f;
+float Kd = 1.0f;
+
+// target
+float setpoint = 0;
+// State variables
+float error = 0.0f;
+float previous_error = 0.0f;
+float integral = 0.0f;
+float derivative = 0.0f;
+float output = 0.0f;
+
+// Sample time
+float dt = 0.001f;  // 10 ms
+
 
 // Gyro
-uint16_t rotation = 0;
 uint16_t gyroValue = 0;
 float angularVelocity = 0;
 float measuredVoltage = 0;
@@ -618,7 +637,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
+  huart2.Init.BaudRate = 38400;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -688,12 +707,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 
   readAccelerometer();
+  calculateSpeed();
 
-
-  //HAL_UART_Transmit(&huart2, &motor0[rotation], 1, 20);
-  //HAL_UART_Transmit(&huart2, &value, 1, 20);
-  //HAL_UART_Transmit(&huart2, &motor1[rotation], 1, 20);
-  //HAL_UART_Transmit(&huart2, &value, 1, 20);
+  HAL_UART_Transmit(&huart2, &motor0[rotation], 1, 20);
+  HAL_UART_Transmit(&huart2, &speed, 1, 20);
+ // HAL_Delay(10);
+  HAL_UART_Transmit(&huart2, &motor1[rotation], 1, 20);
+  HAL_UART_Transmit(&huart2, &speed, 1, 20);
+  //HAL_Delay(10);
 }
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
@@ -736,6 +757,29 @@ void calculateGyroAngle(){
 	if (angularVelocity > 0.7 || angularVelocity < -0.7){
 		gyroAngle -= angularVelocity * 0.001; // 1/1000 s
 		// - because the positive and negative sides of the Acc and Gyro are different
+	}
+}
+
+void calculateSpeed(){
+	error = setpoint - accAngle;
+	integral += error * dt;
+	derivative = (error - previous_error) / dt;
+	output = Kp * error + Ki * integral + Kd * derivative;
+	previous_error = error;
+
+	if (output<0){
+		rotation = 2;
+	}
+	else{
+		rotation = 0;
+	}
+
+	speed = abs((int)output);
+	if (speed<0){
+		speed = 0;
+	}
+	else if (speed>127){
+		speed = 127;
 	}
 }
 

@@ -97,14 +97,32 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
- //M1 forward max
+ //M0 forward max
   HAL_UART_Transmit(&huart2, &command, 1, 20);
   HAL_UART_Transmit(&huart2, &data, 1, 20);
-  HAL_Delay(1000);
+  HAL_Delay(300);
 
-  //M1 brak max
-  HAL_UART_Transmit(&huart2, 0x86, 1, 20);
-  HAL_UART_Transmit(&huart2, 127, 1, 20);
+  //M0 break max
+  command = 0x86;
+  data = 127;
+   HAL_UART_Transmit(&huart2, &command, 1, 20);
+   HAL_UART_Transmit(&huart2, &data, 1, 20);
+   HAL_Delay(300);
+
+  //M1 forward max
+   command = 0x8C;
+   data = 127;
+   HAL_UART_Transmit(&huart2, &command, 1, 20);
+   HAL_UART_Transmit(&huart2, &data, 1, 20);
+  HAL_Delay(300);
+
+
+  //M1 brak 0
+   command = 0x87;
+   data = 0;
+   HAL_UART_Transmit(&huart2, &command, 1, 20);
+   HAL_UART_Transmit(&huart2, &data, 1, 20);
+   HAL_Delay(300);
 
   /* USER CODE END 2 */
 
