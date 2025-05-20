@@ -175,11 +175,11 @@ int main(void)
 	accY = (data[2] | (data[3] << 8));
 	accZ = (data[4] | (data[5] << 8));
 
-	accValues[0] = (accX / 32767.0) * 2;
+	accValues[0] = (accX / 32767.0) * 2;	//measured value / max value * max measurement value
 	accValues[1] = (accY / 32767.0) * 2;
 	accValues[2] = (accZ / 32767.0) * 2;
 
-	angleData = atan(accX/accZ)*180/M_PI;
+	angleData = atan(accX/accZ)*180/M_PI; // in degrees
 	angleValue = atan(accValues[0]/accValues[2])*180/M_PI;
 
 	HAL_Delay(10);
