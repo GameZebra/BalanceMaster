@@ -23,6 +23,7 @@
 /* USER CODE BEGIN Includes */
 
 #include "qik_2s12v10_lib.h"
+#include "math.h"
 
 /* USER CODE END Includes */
 
@@ -63,9 +64,11 @@ uint8_t const motor0[3] = {m0Forward, m0Brake, m0Reverse};
 uint8_t const motor1[3] = {m1Reverese, m1Brake, m1Forward};
 
 // Gyro
-uint8_t rotation = 0;
-uint8_t value = 0;
-uint8_t test = 0;
+uint16_t rotation = 0;
+uint16_t gyroValue = 0;
+float angularVelocity = 0;
+float measuredVoltage = 0;
+float gyroAngle = 0;
 
 // Accelerometer
 uint8_t reg = 0x0F | 0x80;  // WHO_AM_I register (0x0F) with read bit (0x80)
@@ -74,7 +77,8 @@ uint8_t accReg [6] = {0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D};
 int16_t accX = 0;
 int16_t accY = 0;
 int16_t accZ = 0;
-double accValues[3];
+float accValues[3];
+float accAngle = 0;
 
 uint8_t isEnabled = 0;
 uint8_t enableAcc[2] = {0x20, 0x67};
@@ -147,14 +151,56 @@ int main(void)
   MX_UART5_Init();
   /* USER CODE BEGIN 2 */
 
+
+  // Accelerometer init
+  uint8_t isEnabled = 0;
+  uint8_t enableAcc[2] = {0x20, 0x67};
+  uint8_t enableDRY[2] = {0x23, 0xC8};
+
+
+
+  uint8_t msg = (enableAcc[0] | 0x80);
+  ACCEL_CS_LOW();
+  msg = (enableAcc[0] & 0x3F);
+  HAL_SPI_Transmit(&hspi1, &msg, 1, HAL_MAX_DELAY);
+  HAL_SPI_Transmit(&hspi1, &enableAcc[1], 1, HAL_MAX_DELAY);
+  ACCEL_CS_HIGH();
+  HAL_Delay(10);
+
+  msg = (enableAcc[0] | 0x80);
+  ACCEL_CS_LOW();
+  HAL_SPI_Transmit(&hspi1, &msg, 1, HAL_MAX_DELAY);
+  HAL_SPI_Receive(&hspi1, &isEnabled, 1, HAL_MAX_DELAY);
+  ACCEL_CS_HIGH();
+  HAL_Delay(10);
+
+
+  msg = enableDRY[0] & 0x3F;
+  ACCEL_CS_LOW();
+  HAL_SPI_Transmit(&hspi1, &msg, 1, HAL_MAX_DELAY);
+  HAL_SPI_Transmit(&hspi1, &enableDRY[1], 1, HAL_MAX_DELAY);
+  ACCEL_CS_HIGH();                 // Disable
+  HAL_Delay(10);
+
+  HAL_Delay(100); // possibly not enough time for the UART to set up
+
+  // initial angle
+  readAccelerometer();
+  gyroAngle = accAngle;
+
   // UART Motor Driver communication
   __HAL_TIM_SET_COMPARE(&htim10,TIM_CHANNEL_1, 10);
   HAL_TIM_Base_Start_IT(&htim10);
+  //HAL_Delay(400); // offsetting the tiers
 
   // ADC gyro read
   //__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 100);
   HAL_TIM_Base_Start(&htim8);
   HAL_ADC_Start_IT(&hadc1);
+
+
+
+
 
   /* USER CODE END 2 */
 
@@ -252,7 +298,7 @@ static void MX_ADC1_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_4;
   sConfig.Rank = 1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+  sConfig.SamplingTime = ADC_SAMPLETIME_15CYCLES;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -420,7 +466,7 @@ static void MX_TIM8_Init(void)
   htim8.Instance = TIM8;
   htim8.Init.Prescaler = 8;
   htim8.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim8.Init.Period = 100;
+  htim8.Init.Period = 1000;
   htim8.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim8.Init.RepetitionCounter = 0;
   htim8.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -433,7 +479,7 @@ static void MX_TIM8_Init(void)
   {
     Error_Handler();
   }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim8, &sMasterConfig) != HAL_OK)
   {
@@ -465,7 +511,7 @@ static void MX_TIM10_Init(void)
   htim10.Instance = TIM10;
   htim10.Init.Prescaler = 8;
   htim10.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim10.Init.Period = 100;
+  htim10.Init.Period = 1000;
   htim10.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim10.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim10) != HAL_OK)
@@ -641,11 +687,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   // pid
 
 
+  readAccelerometer();
 
-  HAL_UART_Transmit(&huart2, &motor0[rotation], 1, 20);
-  HAL_UART_Transmit(&huart2, &value, 1, 20);
-  HAL_UART_Transmit(&huart2, &motor1[rotation], 1, 20);
-  HAL_UART_Transmit(&huart2, &value, 1, 20);
+
+  //HAL_UART_Transmit(&huart2, &motor0[rotation], 1, 20);
+  //HAL_UART_Transmit(&huart2, &value, 1, 20);
+  //HAL_UART_Transmit(&huart2, &motor1[rotation], 1, 20);
+  //HAL_UART_Transmit(&huart2, &value, 1, 20);
 }
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
@@ -656,7 +704,9 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
             the HAL_ADC_ConvCpltCallback could be implemented in the user file
    */
 
-  test+=1;
+
+  gyroValue = HAL_ADC_GetValue(&hadc1);
+  calculateGyroAngle();
 }
 
 void readAccelerometer(){
@@ -676,8 +726,18 @@ void readAccelerometer(){
 	accValues[0] = (accX / 32767.0) * 2;
 	accValues[1] = (accY / 32767.0) * 2;
 	accValues[2] = (accZ / 32767.0) * 2;
+
+	accAngle = atan(accValues[0]/accValues[2])*180/M_PI;
 }
 
+void calculateGyroAngle(){
+	measuredVoltage = (gyroValue / 4095.0)*2.9;
+	angularVelocity = (measuredVoltage - 1.47)/0.01375/2; // degrees/ time
+	if (angularVelocity > 0.7 || angularVelocity < -0.7){
+		gyroAngle -= angularVelocity * 0.001; // 1/1000 s
+		// - because the positive and negative sides of the Acc and Gyro are different
+	}
+}
 
 /* USER CODE END 4 */
 
