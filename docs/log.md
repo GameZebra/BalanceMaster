@@ -33,3 +33,13 @@
 - 🤖 robot hardware done
 ![robot upgrade done](/media/robot_upgrade_done.jpeg "robot upgrade done") 
 
+## 📅 May 20, 2025
+- 💻 fixed the Franken bot file, now:
+    - reads the gyroscope
+    - reads the accelerometer
+    - controls the motors
+- 💻 added PID algorythim
+- 🤖 baddly configured PID, but the robot is trying to stabilize itself
+
+
+
