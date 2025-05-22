@@ -66,18 +66,19 @@ uint8_t rotation = 0;
 uint8_t speed = 0;
 
 // PID constants
-float Kp = 14.0f;
-float Ki = 4.5f;
-float Kd = 100.0f;
+float Kp = 3.20f;
+float Ki = 0.65f;
+float Kd = 0.00710f;
 
 // target
-float setpoint = 0;
+float setpoint = 1.25;
 // State variables
 float error = 0.0f;
 float previous_error = 0.0f;
 float integral = 0.0f;
 float derivative = 0.0f;
 float output = 0.0f;
+float dMAX = 0;
 
 // Sample time
 float dt = 0.001f;  // 10 ms
@@ -767,19 +768,27 @@ void calculateSpeed(){
 	output = Kp * error + Ki * integral + Kd * derivative;
 	previous_error = error;
 
-	if (output<0){
+	if (error<-0.0){
 		rotation = 2;
 	}
-	else{
+	else if (error>0.0){
 		rotation = 0;
 	}
-
-	speed = abs((int)output);
-	if (speed<0){
-		speed = 0;
+	else{
+		rotation = 1;
 	}
-	else if (speed>127){
-		speed = 127;
+
+
+	if (output<-127){
+		output = -127;
+	}
+	else if (output>127){
+		output = 127;
+	}
+	speed = abs((int)output);
+
+	if (dMAX < derivative){
+		dMAX = derivative;
 	}
 }
 
