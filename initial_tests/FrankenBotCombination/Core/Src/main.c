@@ -66,12 +66,12 @@ uint8_t rotation = 0;
 uint8_t speed = 0;
 
 // PID constants
-float Kp = 3.20f;
+float Kp = 6.40f;
 float Ki = 0.65f;
-float Kd = 0.00710f;
+float Kd = 0.00010f;
 
 // target
-float setpoint = 1.25;
+float setpoint = 1.15;
 // State variables
 float error = 0.0f;
 float previous_error = 0.0f;
