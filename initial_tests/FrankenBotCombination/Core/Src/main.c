@@ -66,19 +66,19 @@ uint8_t rotation = 0;
 uint8_t speed = 0;
 
 // PID constants
-float Kp = 6.40f;
-float Ki = 0.65f;
-float Kd = 0.00010f;
+float Kp = 4.60f;
+float Ki = 16.0f;
+float Kd = 0.27f;
 
 // target
-float setpoint = 1.15;
+float setpoint = -0.50;
 // State variables
 float error = 0.0f;
 float previous_error = 0.0f;
 float integral = 0.0f;
 float derivative = 0.0f;
 float output = 0.0f;
-float dMAX = 0;
+
 
 // Sample time
 float dt = 0.001f;  // 10 ms
@@ -99,6 +99,8 @@ int16_t accY = 0;
 int16_t accZ = 0;
 float accValues[3];
 float accAngle = 0;
+uint8_t simpleNum = 30;
+float simpleAvgAngle[30];
 
 uint8_t isEnabled = 0;
 uint8_t enableAcc[2] = {0x20, 0x67};
@@ -107,6 +109,9 @@ uint8_t status = 0;
 uint8_t data[6];
 uint8_t const range = 2;
 
+// debug
+float angle = 0;
+float dMAX = 0;
 
 /* USER CODE END PV */
 
@@ -207,6 +212,9 @@ int main(void)
   // initial angle
   readAccelerometer();
   gyroAngle = accAngle;
+  for(int i = 0; i< simpleNum; i++){
+	  simpleAvgAngle[i] = accAngle;
+  }
 
   // UART Motor Driver communication
   __HAL_TIM_SET_COMPARE(&htim10,TIM_CHANNEL_1, 10);
@@ -708,6 +716,15 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 
   readAccelerometer();
+  for(int i = 0; i< simpleNum-1; i++){
+	  simpleAvgAngle[i] = simpleAvgAngle[i+1];
+  }
+  simpleAvgAngle[simpleNum-1] = accAngle;
+  angle =0;
+  for(int i = 0; i< simpleNum-1; i++){
+	  angle += simpleAvgAngle[i];
+  }
+  angle /= simpleNum;
   calculateSpeed();
 
   HAL_UART_Transmit(&huart2, &motor0[rotation], 1, 20);
@@ -762,7 +779,7 @@ void calculateGyroAngle(){
 }
 
 void calculateSpeed(){
-	error = setpoint - accAngle;
+	error = setpoint - angle;
 	integral += error * dt;
 	derivative = (error - previous_error) / dt;
 	output = Kp * error + Ki * integral + Kd * derivative;
