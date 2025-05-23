@@ -53,6 +53,7 @@ TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim8;
 TIM_HandleTypeDef htim10;
+TIM_HandleTypeDef htim11;
 
 UART_HandleTypeDef huart4;
 UART_HandleTypeDef huart5;
@@ -66,9 +67,9 @@ uint8_t rotation = 0;
 uint8_t speed = 0;
 
 // PID constants
-float Kp = 4.60f;
-float Ki = 16.0f;
-float Kd = 0.27f;
+float Kp =  4.0f;
+float Ki =  0.05f;
+float Kd = 2.0f;
 
 // target
 float setpoint = -0.50;
@@ -81,7 +82,7 @@ float output = 0.0f;
 
 
 // Sample time
-float dt = 0.001f;  // 10 ms
+float dt = 0.005f;  // 10 ms
 
 
 // Gyro
@@ -127,6 +128,7 @@ static void MX_TIM10_Init(void);
 static void MX_TIM8_Init(void);
 static void MX_UART4_Init(void);
 static void MX_UART5_Init(void);
+static void MX_TIM11_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -174,6 +176,7 @@ int main(void)
   MX_TIM8_Init();
   MX_UART4_Init();
   MX_UART5_Init();
+  MX_TIM11_Init();
   /* USER CODE BEGIN 2 */
 
 
@@ -219,6 +222,8 @@ int main(void)
   // UART Motor Driver communication
   __HAL_TIM_SET_COMPARE(&htim10,TIM_CHANNEL_1, 10);
   HAL_TIM_Base_Start_IT(&htim10);
+  __HAL_TIM_SET_COMPARE(&htim11,TIM_CHANNEL_1, 500);
+  HAL_TIM_Base_Start_IT(&htim11);
   //HAL_Delay(400); // offsetting the tiers
 
   // ADC gyro read
@@ -531,36 +536,53 @@ static void MX_TIM10_Init(void)
 
   /* USER CODE END TIM10_Init 0 */
 
-  TIM_OC_InitTypeDef sConfigOC = {0};
-
   /* USER CODE BEGIN TIM10_Init 1 */
 
   /* USER CODE END TIM10_Init 1 */
   htim10.Instance = TIM10;
   htim10.Init.Prescaler = 8;
   htim10.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim10.Init.Period = 1000;
+  htim10.Init.Period = 5000;
   htim10.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim10.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim10) != HAL_OK)
   {
     Error_Handler();
   }
-  if (HAL_TIM_OC_Init(&htim10) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sConfigOC.OCMode = TIM_OCMODE_TIMING;
-  sConfigOC.Pulse = 0;
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-  if (HAL_TIM_OC_ConfigChannel(&htim10, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
-  {
-    Error_Handler();
-  }
   /* USER CODE BEGIN TIM10_Init 2 */
 
   /* USER CODE END TIM10_Init 2 */
+
+}
+
+/**
+  * @brief TIM11 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM11_Init(void)
+{
+
+  /* USER CODE BEGIN TIM11_Init 0 */
+
+  /* USER CODE END TIM11_Init 0 */
+
+  /* USER CODE BEGIN TIM11_Init 1 */
+
+  /* USER CODE END TIM11_Init 1 */
+  htim11.Instance = TIM11;
+  htim11.Init.Prescaler = 8000;
+  htim11.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim11.Init.Period = 1000;
+  htim11.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim11.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim11) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM11_Init 2 */
+
+  /* USER CODE END TIM11_Init 2 */
 
 }
 
@@ -714,25 +736,30 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   // calculations
   // pid
 
-
-  readAccelerometer();
-  for(int i = 0; i< simpleNum-1; i++){
-	  simpleAvgAngle[i] = simpleAvgAngle[i+1];
+  if (htim == &htim11) {
+	  //gyroAngle = angle;
   }
-  simpleAvgAngle[simpleNum-1] = accAngle;
-  angle =0;
-  for(int i = 0; i< simpleNum-1; i++){
-	  angle += simpleAvgAngle[i];
-  }
-  angle /= simpleNum;
-  calculateSpeed();
+  if (htim == &htim10){
+	  readAccelerometer();
+	    for(int i = 0; i< simpleNum-1; i++){
+	  	  simpleAvgAngle[i] = simpleAvgAngle[i+1];
+	    }
+	    simpleAvgAngle[simpleNum-1] = accAngle;
+	    angle =0;
+	    for(int i = 0; i< simpleNum-1; i++){
+	  	  angle += simpleAvgAngle[i];
+	    }
+	    angle /= simpleNum;
+	    calculateSpeed();
 
-  HAL_UART_Transmit(&huart2, &motor0[rotation], 1, 20);
-  HAL_UART_Transmit(&huart2, &speed, 1, 20);
- // HAL_Delay(10);
-  HAL_UART_Transmit(&huart2, &motor1[rotation], 1, 20);
-  HAL_UART_Transmit(&huart2, &speed, 1, 20);
-  //HAL_Delay(10);
+	    HAL_UART_Transmit(&huart2, &motor0[rotation], 1, 20);
+	    HAL_UART_Transmit(&huart2, &speed, 1, 20);
+	   // HAL_Delay(10);
+	    HAL_UART_Transmit(&huart2, &motor1[rotation], 1, 20);
+	    HAL_UART_Transmit(&huart2, &speed, 1, 20);
+	    //HAL_Delay(10);
+  }
+
 }
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
@@ -779,7 +806,8 @@ void calculateGyroAngle(){
 }
 
 void calculateSpeed(){
-	error = setpoint - angle;
+	gyroAngle = angle;
+	error = setpoint - gyroAngle;
 	integral += error * dt;
 	derivative = (error - previous_error) / dt;
 	output = Kp * error + Ki * integral + Kd * derivative;
