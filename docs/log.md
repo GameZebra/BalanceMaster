@@ -42,4 +42,20 @@
 - 🤖 baddly configured PID, but the robot is trying to stabilize itself
 
 
+## 📅 May 22, 2025
+- 💻 spend a lot of time trying different PID values - didn't work well
+    - the robot is trying to stabilize itself, it's much better than the first iteration, 
+    BUT it still can't stabilize the robot, nor to compensate for a high diviation from 
+    the stable position
+    - when the Kd is high the robot seems closer to stabilizeing itself, BUT it's a lot jurkey
+    and this heats the motors and the buck converter that stabilizes the volteg for the motor driver
+    (to the point taht the buck converter shuts off). Probbably the frequent change in direction 
+    requieres high amount of current without almost any meaningfull result
+- :page_facing_up: i used already derived differential equations for the mechanics of an inverted pengulum
+and derived a State space model from them (by hand)
+- 🧠 I am thinking that a much hidher Kd will be required but this makes the motors to overheat
+and that's far from ideal. Probbably i should try:
+    - filtration of the accelerometer signal 
+    - use the gyro - even thou it's signal is far from ideal (correct) it may suffer less from the noise
+    generated from the motors (whem jurking around the stable position)
 
