@@ -51,6 +51,8 @@
     and this heats the motors and the buck converter that stabilizes the volteg for the motor driver
     (to the point taht the buck converter shuts off). Probbably the frequent change in direction 
     requieres high amount of current without almost any meaningfull result
+    - tried using a deadzone around the work point, but this worked badly for the responsiveness
+    and worked good for the overheating of the motors 
 - :page_facing_up: i used already derived differential equations for the mechanics of an inverted pengulum
 and derived a State space model from them (by hand)
 - 🧠 I am thinking that a much hidher Kd will be required but this makes the motors to overheat
@@ -58,4 +60,30 @@ and that's far from ideal. Probbably i should try:
     - filtration of the accelerometer signal 
     - use the gyro - even thou it's signal is far from ideal (correct) it may suffer less from the noise
     generated from the motors (whem jurking around the stable position)
+- :page_facing_up: TODO try:
+    - high Kd component and larger deadzone
+        - i want to get the robot atleast to ascilate around the work point
+    - filtration of the signal
+    - measure the parameters of the robot and try to create a model in matlab
+    - tune a PID in matlab and try it on the robot to see if the model created has anything in common with the actual robot
 
+
+## 📅 May 23, 2025
+- 💻 impemented moving average
+    - there is improvement but even thou somethimes there are spikes and, 
+    i'm thinkig I may try adding the average value as current value, this way I'll have even better filtration
+- :page_facing_up: I still had large spikes in the Kd component
+- 🔍 found a YouTube channel that has decent math and controll videos
+    - watched the tutorials for Complex Analisis
+- 🔍 found a MatLab example of an inverted pengulum controll which i can try
+ 💻 tryed swapping the accelerometer with the gyro
+    - didn't go well, i activated a timer to periodically return the gyro in the "correct" angle valye, but how do i know it is "correct"?
+    it behaved as a gyro with wrong zero and then when it synced - just jumped on the side, and this was happening every second 
+    - if i want to use the gyro I must prepare the data better first
+- 🧠 I am thinking that:
+    - apart from the filtration i may need to secure better the controller to the body of the robot
+    because this way I'm amplifying the vibrations  
+    - I may also look at the filtrations that we used in the labs for System Identification
+ - 🧠 How to implement sequential control? 
+    - upright stabilization is acheived by following the zero degrees angle
+    - and to acheive movement i can dynamicaly change the target angle so that the car moves linearly in space
