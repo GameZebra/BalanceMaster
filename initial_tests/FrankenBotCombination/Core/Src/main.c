@@ -61,18 +61,18 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 // Motor driver commands (UART)
-uint8_t const motor0[3] = {m0Forward, m0Brake, m0Reverse};
-uint8_t const motor1[3] = {m1Reverese, m1Brake, m1Forward};
+uint8_t const motor0[3] = {m0Forward, m0Brake, m0Reverse};	// the left motor
+uint8_t const motor1[3] = {m1Reverese, m1Brake, m1Forward}; // the right motor
 uint8_t rotation = 0;
 uint8_t speed = 0;
 
 // PID constants
-float Kp =  4.0f;
-float Ki =  0.05f;
-float Kd = 2.0f;
+float Kp =  12.0f;
+float Ki =  0.0f;
+float Kd = 1.30f;
 
 // target
-float setpoint = -0.50;
+float setpoint = -1.850;
 // State variables
 float error = 0.0f;
 float previous_error = 0.0f;
