@@ -42,12 +42,21 @@
 /* Private variables ---------------------------------------------------------*/
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
+TIM_HandleTypeDef htim14;
 
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 int16_t encoderL = 0;
 int16_t encoderR = 0;
+
+float dt = 0.010;
+int16_t encoderLOld = 0;
+int16_t encoderROld = 0;
+int16_t encoderLSpeed = 0;
+int16_t encoderRSpeed = 0;
+int16_t encoderLSpeedMax = 0;
+int16_t encoderRSpeedMax = 0;
 
 /* USER CODE END PV */
 
@@ -57,6 +66,7 @@ static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_TIM3_Init(void);
+static void MX_TIM14_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -108,8 +118,9 @@ int main(void)
   MX_USART2_UART_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
+  MX_TIM14_Init();
   /* USER CODE BEGIN 2 */
-
+  HAL_TIM_Base_Start_IT(&htim14); // period 10ms
 
   HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_1);
   HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_2);
@@ -117,14 +128,13 @@ int main(void)
   HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_1);
   HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_2);
 
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	encoderL = __HAL_TIM_GET_COUNTER(&htim2);
-	encoderR = __HAL_TIM_GET_COUNTER(&htim3);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -163,7 +173,7 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV2;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
@@ -272,6 +282,37 @@ static void MX_TIM3_Init(void)
 }
 
 /**
+  * @brief TIM14 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM14_Init(void)
+{
+
+  /* USER CODE BEGIN TIM14_Init 0 */
+
+  /* USER CODE END TIM14_Init 0 */
+
+  /* USER CODE BEGIN TIM14_Init 1 */
+
+  /* USER CODE END TIM14_Init 1 */
+  htim14.Instance = TIM14;
+  htim14.Init.Prescaler = 800;
+  htim14.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim14.Init.Period = 1000;
+  htim14.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim14.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim14) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM14_Init 2 */
+
+  /* USER CODE END TIM14_Init 2 */
+
+}
+
+/**
   * @brief USART2 Initialization Function
   * @param None
   * @retval None
@@ -323,6 +364,44 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* Prevent unused argument(s) compilation warning */
+  UNUSED(htim);
+
+  /*
+  int16_t encoderL = 0;
+  int16_t encoderR = 0;
+
+  float dt = 0.010;
+  int16_t encoderLOld = 0;
+  int16_t encoderROld = 0;
+  int16_t encoderLSpeed = 0;
+  int16_t encoderRSpeed = 0;
+  int16_t encoderLSpeedMax = 0;
+  int16_t encoderRSpeedMax = 0;
+  */
+
+
+  encoderL = __HAL_TIM_GET_COUNTER(&htim2);
+  encoderR = __HAL_TIM_GET_COUNTER(&htim3);
+
+  encoderLSpeed = (encoderL-encoderLOld)/dt;
+  encoderLOld = encoderL;
+
+  if (encoderLSpeed > encoderLSpeedMax){
+	  encoderLSpeedMax = encoderLSpeed;
+  }
+  // TODO
+  // min speed
+  // the right encoder also
+  // to make the speed with meaningfull unit
+  // now is impulses per time
+
+}
+
+
 
 /* USER CODE END 4 */
 
