@@ -43,7 +43,10 @@
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-
+uint8_t command = 0x88;
+uint8_t data = 0x7F;
+uint8_t i = 0;
+uint8_t *point = &i;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -69,10 +72,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-  uint8_t command = 0x88;
-  uint8_t data = 0x7F;
-  uint8_t i = 0;
-  uint8_t *point = &i;
+
 
   /* USER CODE END 1 */
 
@@ -98,23 +98,60 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
  //M0 forward max
+  command = 0x88;
+  data = 0x7F;
   HAL_UART_Transmit(&huart2, &command, 1, 20);
   HAL_UART_Transmit(&huart2, &data, 1, 20);
+  HAL_Delay(7);
+  // check the current
+  command = 0x90;
+  HAL_UART_Transmit(&huart2, &command, 1, 20);
+  HAL_UART_Receive(&huart2, &data, 1, 20);
   HAL_Delay(300);
 
-  //M0 break max
-  command = 0x86;
-  data = 127;
+  //M0 reverse max
+   command = 0x8B;
+   data = 0x7F;
    HAL_UART_Transmit(&huart2, &command, 1, 20);
    HAL_UART_Transmit(&huart2, &data, 1, 20);
+   HAL_Delay(7);
+
+
+  //M0 break max
+   command = 0x86;
+   data = 127;
+   HAL_UART_Transmit(&huart2, &command, 1, 20);
+   HAL_UART_Transmit(&huart2, &data, 1, 20);
+   // check current while braking
+   command = 0x90;
+   HAL_UART_Transmit(&huart2, &command, 1, 20);
+   HAL_UART_Receive(&huart2, &data, 1, 20);
    HAL_Delay(300);
+   // check current on stopped motor
+   command = 0x90;
+   HAL_UART_Transmit(&huart2, &command, 1, 20);
+   HAL_UART_Receive(&huart2, &data, 1, 20);
+   HAL_Delay(300);
+
+
+   //M0 forward medium speed 63
+    command = 0x88;
+    data = 63;
+    HAL_UART_Transmit(&huart2, &command, 1, 20);
+    HAL_UART_Transmit(&huart2, &data, 1, 20);
+
+    // check the current
+    command = 0x90;
+    HAL_UART_Transmit(&huart2, &command, 1, 20);
+    HAL_UART_Receive(&huart2, &data, 1, 20);
+    HAL_Delay(300);
 
   //M1 forward max
    command = 0x8C;
    data = 127;
    HAL_UART_Transmit(&huart2, &command, 1, 20);
    HAL_UART_Transmit(&huart2, &data, 1, 20);
-  HAL_Delay(300);
+   HAL_Delay(300);
 
 
   //M1 brak 0
