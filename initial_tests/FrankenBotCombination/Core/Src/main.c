@@ -64,7 +64,9 @@ UART_HandleTypeDef huart2;
 uint8_t const motor0[3] = {m0Forward, m0Brake, m0Reverse};	// the left motor
 uint8_t const motor1[3] = {m1Reverese, m1Brake, m1Forward}; // the right motor
 uint8_t rotation = 0;
+uint8_t rotationOld = 0;
 uint8_t speed = 0;
+uint8_t brake = 127;
 
 // PID constants
 float Kp =  12.0f;
@@ -74,13 +76,14 @@ float Kd = 1.30f;
 //float integralMax = 127/Ki;
 
 // target
-float setpoint = -1.850;
+float setpoint = -1.0;
 // State variables
 float error = 0.0f;
 float previous_error = 0.0f;
 float integral = 0.0f;
 float derivative = 0.0f;
 float output = 0.0f;
+uint8_t dirChange = 0;
 
 
 // Sample time
@@ -262,8 +265,19 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
-
+	 if(rotation != rotationOld){
+		 dirChange = 1;
+	 }
+	 else{
+		 dirChange = 0;
+	 }
+	 rotationOld = rotation;
+	 if(dirChange==1){
+		 if(encoderLSpeed != 0){
+			HAL_UART_Transmit(&huart2, &motor0[1], 1, 20);
+			HAL_UART_Transmit(&huart2, &brake, 1, 20);
+		 }
+	 }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
