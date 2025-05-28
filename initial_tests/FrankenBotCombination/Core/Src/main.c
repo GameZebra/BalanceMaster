@@ -71,6 +71,8 @@ float Kp =  12.0f;
 float Ki =  0.0f;
 float Kd = 1.30f;
 
+//float integralMax = 127/Ki;
+
 // target
 float setpoint = -1.850;
 // State variables
@@ -113,6 +115,21 @@ uint8_t const range = 2;
 // debug
 float angle = 0;
 float dMAX = 0;
+
+
+// encoders
+int16_t encoderL = 0;
+int16_t encoderR = 0;
+
+int16_t encoderLOld = 0;
+int16_t encoderROld = 0;
+int16_t encoderLSpeed = 0;
+int16_t encoderRSpeed = 0;
+int16_t encoderLSpeedMax = 0;
+int16_t encoderRSpeedMax = 0;
+int16_t encoderLSpeedMin = 0;
+int16_t encoderRSpeedMin = 0;
+
 
 /* USER CODE END PV */
 
@@ -231,8 +248,12 @@ int main(void)
   HAL_TIM_Base_Start(&htim8);
   HAL_ADC_Start_IT(&hadc1);
 
+  // encoder begin
+  HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_1);
+  HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_2);
 
-
+  HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_1);
+  HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_2);
 
 
   /* USER CODE END 2 */
@@ -404,7 +425,7 @@ static void MX_TIM2_Init(void)
   htim2.Init.Period = 4294967295;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  sConfig.EncoderMode = TIM_ENCODERMODE_TI1;
+  sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
   sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
   sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
@@ -453,7 +474,7 @@ static void MX_TIM3_Init(void)
   htim3.Init.Period = 65535;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  sConfig.EncoderMode = TIM_ENCODERMODE_TI1;
+  sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
   sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
   sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
@@ -741,6 +762,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   }
   if (htim == &htim10){
 	  readAccelerometer();
+	  getEncoders();
 	    for(int i = 0; i< simpleNum-1; i++){
 	  	  simpleAvgAngle[i] = simpleAvgAngle[i+1];
 	    }
@@ -835,6 +857,29 @@ void calculateSpeed(){
 	if (dMAX < derivative){
 		dMAX = derivative;
 	}
+}
+
+void getEncoders(){
+	  encoderL = __HAL_TIM_GET_COUNTER(&htim2);
+	  encoderR = __HAL_TIM_GET_COUNTER(&htim3);
+
+	  encoderLSpeed = (encoderL-encoderLOld)/dt;
+	  encoderLOld = encoderL;
+
+	  encoderRSpeed = (encoderR-encoderROld)/dt;
+	  encoderROld = encoderR;
+
+	  if (encoderLSpeed > encoderLSpeedMax){
+	 	  encoderLSpeedMax = encoderLSpeed;
+	   }else if(encoderLSpeed < encoderLSpeedMin){
+	 	  encoderLSpeedMin = encoderLSpeed;
+	   }
+
+	   if (encoderRSpeed > encoderRSpeedMax){
+	 	  encoderRSpeedMax = encoderRSpeed;
+	   }else if(encoderRSpeed < encoderRSpeedMin){
+	 	  encoderRSpeedMin = encoderRSpeed;
+	   }
 }
 
 /* USER CODE END 4 */
