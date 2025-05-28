@@ -70,13 +70,13 @@ and that's far from ideal. Probbably i should try:
 
 ## 📅 May 23, 2025
 - 💻 impemented moving average
-    - there is improvement but even thou somethimes there are spikes and, 
-    i'm thinkig I may try adding the average value as current value, this way I'll have even better filtration
+    - there is improvement but even thou somethimes there are spikes and, i'm thinkig 
+    - I may try adding the average value as current value, this way I'll have even better filtration
 - :page_facing_up: I still had large spikes in the Kd component
 - 🔍 found a YouTube channel that has decent math and controll videos
     - watched the tutorials for Complex Analisis
 - 🔍 found a MatLab example of an inverted pengulum controll which i can try
- 💻 tryed swapping the accelerometer with the gyro
+- 💻 tryed swapping the accelerometer with the gyro
     - didn't go well, i activated a timer to periodically return the gyro in the "correct" angle valye, but how do i know it is "correct"?
     it behaved as a gyro with wrong zero and then when it synced - just jumped on the side, and this was happening every second 
     - if i want to use the gyro I must prepare the data better first
@@ -84,6 +84,41 @@ and that's far from ideal. Probbably i should try:
     - apart from the filtration i may need to secure better the controller to the body of the robot
     because this way I'm amplifying the vibrations  
     - I may also look at the filtrations that we used in the labs for System Identification
- - 🧠 How to implement sequential control? 
+- 🧠 How to implement sequential control? 
+    - upright stabilization is acheived by following the zero degrees angle
+    - and to acheive movement i can dynamicaly change the target angle so that the car moves linearly in space
+
+
+## 📅 May 27, 2025
+- 🔧 fixed the controler ant the accelerometer to the body of the robot better to limit the vibrations
+    - and it is working verry well
+- 💻 impemented moving average filtration
+    - A great stupidity actually, I'had suspicions about that but
+    - this way the angle tends to zero, and is not usefull at all
+- 🔍 maged to connect the osciloscope with the PC (it needs it's USB cable to work properly)
+- 🔍 The command "Get Motor M0/M1 Speed" returns the speed the driver is trying to speed the motors to - So it's not practical for checking 
+if the motrs are not moveing
+- 🔍 The command "Get Motor M0/M1 Current" returns average motor current for the past 5ms (+/-20%)
+- 🔧 I measured the current throught the motors and the driver in different working conditions (including work mode)
+    - TODO: analize the results why does the controller shuts down?
+- 💻 improved the encoders demo code:
+    - works with both encoders on the propper channels 
+    - calculates the wheels actual speed
+    
+
+## 📅 May 27, 2025
+- :page_facing_up: I still had large spikes in the Kd component
+- 🔍 found a YouTube channel that has decent math and controll videos
+    - watched the tutorials for Complex Analisis
+- 🔍 found a MatLab example of an inverted pengulum controll which i can try
+- 💻 tryed swapping the accelerometer with the gyro
+    - didn't go well, i activated a timer to periodically return the gyro in the "correct" angle valye, but how do i know it is "correct"?
+    it behaved as a gyro with wrong zero and then when it synced - just jumped on the side, and this was happening every second 
+    - if i want to use the gyro I must prepare the data better first
+- 🧠 I am thinking that:
+    - apart from the filtration i may need to secure better the controller to the body of the robot
+    because this way I'm amplifying the vibrations  
+    - I may also look at the filtrations that we used in the labs for System Identification
+- 🧠 How to implement sequential control? 
     - upright stabilization is acheived by following the zero degrees angle
     - and to acheive movement i can dynamicaly change the target angle so that the car moves linearly in space
