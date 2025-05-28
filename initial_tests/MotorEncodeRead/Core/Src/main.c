@@ -57,7 +57,8 @@ int16_t encoderLSpeed = 0;
 int16_t encoderRSpeed = 0;
 int16_t encoderLSpeedMax = 0;
 int16_t encoderRSpeedMax = 0;
-
+int16_t encoderLSpeedMin = 0;
+int16_t encoderRSpeedMin = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -256,7 +257,7 @@ static void MX_TIM3_Init(void)
   htim3.Init.Period = 65535;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  sConfig.EncoderMode = TIM_ENCODERMODE_TI1;
+  sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
   sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
   sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
@@ -370,7 +371,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* Prevent unused argument(s) compilation warning */
   UNUSED(htim);
 
-  /*
+  /*//variables reference
   int16_t encoderL = 0;
   int16_t encoderR = 0;
 
@@ -390,12 +391,22 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   encoderLSpeed = (encoderL-encoderLOld)/dt;
   encoderLOld = encoderL;
 
+  encoderRSpeed = (encoderR-encoderROld)/dt;
+  encoderROld = encoderR;
+
   if (encoderLSpeed > encoderLSpeedMax){
 	  encoderLSpeedMax = encoderLSpeed;
+  }else if(encoderLSpeed < encoderLSpeedMin){
+	  encoderLSpeedMin = encoderLSpeed;
   }
+
+  if (encoderRSpeed > encoderRSpeedMax){
+	  encoderRSpeedMax = encoderRSpeed;
+  }else if(encoderRSpeed < encoderRSpeedMin){
+	  encoderRSpeedMin = encoderRSpeed;
+  }
+
   // TODO
-  // min speed
-  // the right encoder also
   // to make the speed with meaningfull unit
   // now is impulses per time
 
