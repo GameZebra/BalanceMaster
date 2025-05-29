@@ -69,20 +69,24 @@ uint8_t speed = 0;
 uint8_t brake = 127;
 
 // PID constants
-float Kp =  12.0f;
-float Ki =  0.0f;
-float Kd = 1.30f;
+float Kp =  15.0f;
+float Ki =  30.0f;
+float Kd = 0.0030f;
 
 //float integralMax = 127/Ki;
 
 // target
-float setpoint = -1.0;
+float setpoint = -1.230;
+float setPointDelta = 1;
+int8_t sign = 1;
+uint8_t moved = 0;
 // State variables
 float error = 0.0f;
 float previous_error = 0.0f;
 float integral = 0.0f;
 float derivative = 0.0f;
 float output = 0.0f;
+float outputOld = 0.0f;
 uint8_t dirChange = 0;
 
 
@@ -265,19 +269,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	 if(rotation != rotationOld){
-		 dirChange = 1;
-	 }
-	 else{
-		 dirChange = 0;
-	 }
-	 rotationOld = rotation;
-	 if(dirChange==1){
-		 if(encoderLSpeed != 0){
-			HAL_UART_Transmit(&huart2, &motor0[1], 1, 20);
-			HAL_UART_Transmit(&huart2, &brake, 1, 20);
-		 }
-	 }
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -775,6 +767,16 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	  //gyroAngle = angle;
   }
   if (htim == &htim10){
+	  	if(dirChange == 0 && moved >=10){
+	  		if(rotation == 2){
+		  		sign = 1;
+	  		}
+	  		else if(rotation == 0){
+		  		sign = -1;
+	  		}
+	  		moved = 0;
+		  	targetUpdate();
+	  	}
 		readAccelerometer();
 		getEncoders();
 		for(int i = 0; i< simpleNum; i++){
@@ -788,12 +790,38 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		angle /= simpleNum;
 		calculateSpeed();
 
-		HAL_UART_Transmit(&huart2, &motor0[rotation], 1, 20);
-		HAL_UART_Transmit(&huart2, &speed, 1, 20);
-		// HAL_Delay(10);
-		HAL_UART_Transmit(&huart2, &motor1[rotation], 1, 20);
-		HAL_UART_Transmit(&huart2, &speed, 1, 20);
-		//HAL_Delay(10);
+		 if(rotation != rotationOld){
+			 dirChange = 1;
+			 moved =0;
+		 }
+		 else{
+			 //dirChange = 0;
+			 if(abs((int)error) < 0.2){
+				 moved++;
+			 }
+
+		 }
+		 if(dirChange==1){
+			 if(encoderRSpeed != 0){
+				HAL_UART_Transmit(&huart2, &motor0[1], 1, 20);
+				HAL_UART_Transmit(&huart2, &brake, 1, 20);
+				HAL_UART_Transmit(&huart2, &motor1[1], 1, 20);
+				HAL_UART_Transmit(&huart2, &brake, 1, 20);
+			 }
+			 else{
+				 dirChange = 0;
+				 rotationOld = rotation;
+			 }
+		 }
+		if(dirChange == 0){
+			HAL_UART_Transmit(&huart2, &motor0[rotation], 1, 20);
+			HAL_UART_Transmit(&huart2, &speed, 1, 20);
+			// HAL_Delay(10);
+			HAL_UART_Transmit(&huart2, &motor1[rotation], 1, 20);
+			HAL_UART_Transmit(&huart2, &speed, 1, 20);
+			//HAL_Delay(10);
+		}
+
   }
 
 }
@@ -896,6 +924,11 @@ void getEncoders(){
 	   }
 }
 
+
+void targetUpdate(){
+	setpoint += setPointDelta*sign;
+	setPointDelta /= 2.0f;
+}
 /* USER CODE END 4 */
 
 /**
