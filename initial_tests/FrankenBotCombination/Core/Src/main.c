@@ -105,8 +105,8 @@ int16_t accY = 0;
 int16_t accZ = 0;
 float accValues[3];
 float accAngle = 0;
-uint8_t simpleNum = 30;
-float simpleAvgAngle[30];
+uint8_t simpleNum = 10;
+float simpleAvgAngle[10];
 
 uint8_t isEnabled = 0;
 uint8_t enableAcc[2] = {0x20, 0x67};
@@ -775,25 +775,25 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	  //gyroAngle = angle;
   }
   if (htim == &htim10){
-	  readAccelerometer();
-	  getEncoders();
-	    for(int i = 0; i< simpleNum-1; i++){
-	  	  simpleAvgAngle[i] = simpleAvgAngle[i+1];
-	    }
-	    simpleAvgAngle[simpleNum-1] = accAngle;
-	    angle =0;
-	    for(int i = 0; i< simpleNum-1; i++){
-	  	  angle += simpleAvgAngle[i];
-	    }
-	    angle /= simpleNum;
-	    calculateSpeed();
+		readAccelerometer();
+		getEncoders();
+		for(int i = 0; i< simpleNum; i++){
+		  simpleAvgAngle[i] = simpleAvgAngle[i+1];
+		}
+		simpleAvgAngle[simpleNum-1] = accAngle;
+		angle =0;
+		for(int i = 0; i< simpleNum; i++){
+		  angle += simpleAvgAngle[i];
+		}
+		angle /= simpleNum;
+		calculateSpeed();
 
-	    HAL_UART_Transmit(&huart2, &motor0[rotation], 1, 20);
-	    HAL_UART_Transmit(&huart2, &speed, 1, 20);
-	   // HAL_Delay(10);
-	    HAL_UART_Transmit(&huart2, &motor1[rotation], 1, 20);
-	    HAL_UART_Transmit(&huart2, &speed, 1, 20);
-	    //HAL_Delay(10);
+		HAL_UART_Transmit(&huart2, &motor0[rotation], 1, 20);
+		HAL_UART_Transmit(&huart2, &speed, 1, 20);
+		// HAL_Delay(10);
+		HAL_UART_Transmit(&huart2, &motor1[rotation], 1, 20);
+		HAL_UART_Transmit(&huart2, &speed, 1, 20);
+		//HAL_Delay(10);
   }
 
 }
