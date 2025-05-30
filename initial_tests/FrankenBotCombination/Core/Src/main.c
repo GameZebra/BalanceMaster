@@ -71,14 +71,16 @@ uint8_t brake = 127;
 // PID constants
 float Kp =  15.0f;
 float Ki =  30.0f;
-float Kd = 0.0030f;
+float Kd = 0.00030f;
 
 //float integralMax = 127/Ki;
 
 // target
 float setpoint = -1.230;
-float setPointDelta = 1;
+float setPointDelta = 0.01;
 int8_t sign = 1;
+int8_t signOld = 1;
+uint8_t signChanges = 0;
 uint8_t moved = 0;
 // State variables
 float error = 0.0f;
@@ -769,13 +771,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   if (htim == &htim10){
 	  	if(dirChange == 0 && moved >=10){
 	  		if(rotation == 2){
-		  		sign = 1;
+		  		sign = -1;
 	  		}
 	  		else if(rotation == 0){
-		  		sign = -1;
+		  		sign = +1;
 	  		}
 	  		moved = 0;
 		  	targetUpdate();
+		  	signOld = sign;
 	  	}
 		readAccelerometer();
 		getEncoders();
@@ -927,7 +930,14 @@ void getEncoders(){
 
 void targetUpdate(){
 	setpoint += setPointDelta*sign;
-	setPointDelta /= 2.0f;
+	if(signOld != sign){
+		signChanges++;
+		if(signChanges > 5 && error < 0.2){
+			setPointDelta *= 0.8f;
+			signChanges = 0;
+		}
+
+	}
 }
 /* USER CODE END 4 */
 
