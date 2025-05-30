@@ -114,3 +114,9 @@ if the motrs are not moveing
     - almost workiing
 
 
+## 📅 May 29, 2025
+- 💻 implemented brake before reversing
+    - fixed the brake before reversing now stops whell
+- 🧠 fix the zero position with bias for the angle
+    - implementation (configuration required)
+
