@@ -1,0 +1,51 @@
+Accelerometer
+
+/to calculate the angle we have to get the acc value normalize it and multiply it with cosine?/
+
+| flat front |
+accX = 15651
+accY = 218
+accz = 1043
+
+
+| flat back |
+accX = -16337
+accY = 11
+accz = 1731
+
+
+| up right |
+accX = -118
+accY = 639
+accz = 17668
+
+
+
+
+BEST PID Configurations
+TODO: Get them from GitHub
+
+
+
+Current Values Test
+M0 forward max (given in uint8_t)
+Transient Response
+(if no delay 0)
+(if delay 7ms = 23) (3450mA) 
+
+steady state
+2 (300mA)
+
+M0 braking max (given in uint8_t)
+Transient Response
+
+steady state (stopped)
+
+
+M0 forward medium speed 63 (given in uint8_t)
+Transient Response
+
+steady state (stopped)
+
+
+

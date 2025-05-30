@@ -106,19 +106,11 @@ if the motrs are not moveing
     - calculates the wheels actual speed
     
 
-## 📅 May 27, 2025
-- :page_facing_up: I still had large spikes in the Kd component
-- 🔍 found a YouTube channel that has decent math and controll videos
-    - watched the tutorials for Complex Analisis
-- 🔍 found a MatLab example of an inverted pengulum controll which i can try
-- 💻 tryed swapping the accelerometer with the gyro
-    - didn't go well, i activated a timer to periodically return the gyro in the "correct" angle valye, but how do i know it is "correct"?
-    it behaved as a gyro with wrong zero and then when it synced - just jumped on the side, and this was happening every second 
-    - if i want to use the gyro I must prepare the data better first
-- 🧠 I am thinking that:
-    - apart from the filtration i may need to secure better the controller to the body of the robot
-    because this way I'm amplifying the vibrations  
-    - I may also look at the filtrations that we used in the labs for System Identification
-- 🧠 How to implement sequential control? 
-    - upright stabilization is acheived by following the zero degrees angle
-    - and to acheive movement i can dynamicaly change the target angle so that the car moves linearly in space
+## 📅 May 28, 2025
+- 💻 added code for the second encoders
+    - it's interesting how when the encoder variable overflows, the speed variable overflows as well and i don't have massive speed reading
+    - min speed added
+- 💻 implemented brake before reversing
+    - almost workiing
+
+
