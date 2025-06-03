@@ -964,19 +964,20 @@ void angleInit(){
 		//}
 		//leftSetup[99] = angle;
 		D = leftSetup[98] - angle;
-		if (D < abs((int)minD) && abs((int)angle) < 5){
+		if (abs((int)D) < abs((int)minD) && abs((int)angle) < 3){
 			minD = D;
 			minDAngle[counter] = angle;
 			flag = 1;
 		}
-		if (abs((int)angle) > 5 && flag){
+		if (abs((int)angle) > 3 && flag){
 			counter++;
 			flag = 0;
+			minD=100;
 		}
 		if(minDAngle[4]){
 			isReady = 0;
 		}
-		HAL_Delay(5);
+		HAL_Delay(30);
 	}
 	setpoint = 0;
 	for(int i = 0; i<5; i++){
