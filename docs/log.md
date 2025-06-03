@@ -120,3 +120,8 @@ if the motrs are not moveing
 - 🧠 fix the zero position with bias for the angle
     - implementation (configuration required)
 
+## 📅 May 30, 2025
+- 💻 fix the zero position with bias for the angle
+    - implementation (configuration required)
+- 💥 managed to fry the buck converter that was supplying energy to the motor driver
+- 🔧 measured the weight of the robot (to use in matematical model)
