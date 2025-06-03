@@ -125,3 +125,8 @@ if the motrs are not moveing
     - implementation (configuration required)
 - 💥 managed to fry the buck converter that was supplying energy to the motor driver
 - 🔧 measured the weight of the robot (to use in matematical model)
+
+## 📅 June 02, 2025
+- 🔍 Watched state space tutorials 
+
+
