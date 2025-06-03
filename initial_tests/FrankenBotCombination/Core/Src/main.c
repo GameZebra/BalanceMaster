@@ -69,9 +69,9 @@ uint8_t speed = 0;
 uint8_t brake = 127;
 
 // PID constants
-float Kp =  15.0f;
-float Ki =  30.0f;
-float Kd = 0.00030f;
+float Kp =  40.0f;
+float Ki =  0.0f;
+float Kd = 0.30f;
 
 //float integralMax = 127/Ki;
 
@@ -80,6 +80,7 @@ float setpoint = -1.230;
 float setPointDelta = 0.01;
 uint8_t isReady = 1;
 float leftSetup[100];
+float previousAngle = 0;
 float minD = 100;
 float minDAngle[5] = {0, 0, 0, 0, 0};
 int8_t sign = 1;
@@ -248,7 +249,7 @@ int main(void)
   for(int i = 0; i< simpleNum; i++){
 	  simpleAvgAngle[i] = accAngle;
   }
-  angleInit();
+  //angleInit();
 
 
   // UART Motor Driver communication
@@ -803,7 +804,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 		 }
 		 if(dirChange==1){
-			 if(encoderRSpeed != 0){
+			 if(encoderRSpeed > 600){
 				HAL_UART_Transmit(&huart2, &motor0[1], 1, 20);
 				HAL_UART_Transmit(&huart2, &brake, 1, 20);
 				HAL_UART_Transmit(&huart2, &motor1[1], 1, 20);
@@ -885,9 +886,10 @@ void calculateSpeed(){
 	gyroAngle = angle;
 	error = setpoint - gyroAngle;
 	integral += error * dt;
-	derivative = (error - previous_error) / dt;
+	derivative = (gyroAngle - previousAngle) / dt;
 	output = Kp * error + Ki * integral + Kd * derivative;
 	previous_error = error;
+	previousAngle = angle;
 
 	if (error<-0.0){
 		rotation = 2;
@@ -941,7 +943,7 @@ void targetUpdate(){
 	setpoint += setPointDelta*sign;
 	if(signOld != sign){
 		signChanges++;
-		if(signChanges > 5 && error < 0.2){
+		if(signChanges > 5 && error < 0.2 && speed < 20){
 			setPointDelta *= 0.8f;
 			signChanges = 0;
 		}
@@ -964,12 +966,12 @@ void angleInit(){
 		//}
 		//leftSetup[99] = angle;
 		D = leftSetup[98] - angle;
-		if (abs((int)D) < abs((int)minD) && abs((int)angle) < 3){
+		if (fabs(D) < fabs(minD) && fabs(angle) < 3){
 			minD = D;
 			minDAngle[counter] = angle;
 			flag = 1;
 		}
-		if (abs((int)angle) > 3 && flag){
+		if (fabs(angle) > 3 && flag){
 			counter++;
 			flag = 0;
 			minD=100;
