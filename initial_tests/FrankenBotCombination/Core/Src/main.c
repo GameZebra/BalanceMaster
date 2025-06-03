@@ -78,6 +78,10 @@ float Kd = 0.00030f;
 // target
 float setpoint = -1.230;
 float setPointDelta = 0.01;
+uint8_t isReady = 1;
+float leftSetup[100];
+float minD = 100;
+float minDAngle[5] = {0, 0, 0, 0, 0};
 int8_t sign = 1;
 int8_t signOld = 1;
 uint8_t signChanges = 0;
@@ -244,6 +248,8 @@ int main(void)
   for(int i = 0; i< simpleNum; i++){
 	  simpleAvgAngle[i] = accAngle;
   }
+  angleInit();
+
 
   // UART Motor Driver communication
   __HAL_TIM_SET_COMPARE(&htim10,TIM_CHANNEL_1, 10);
@@ -263,6 +269,7 @@ int main(void)
 
   HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_1);
   HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_2);
+
 
 
   /* USER CODE END 2 */
@@ -782,15 +789,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	  	}
 		readAccelerometer();
 		getEncoders();
-		for(int i = 0; i< simpleNum; i++){
-		  simpleAvgAngle[i] = simpleAvgAngle[i+1];
-		}
-		simpleAvgAngle[simpleNum-1] = accAngle;
-		angle =0;
-		for(int i = 0; i< simpleNum; i++){
-		  angle += simpleAvgAngle[i];
-		}
-		angle /= simpleNum;
 		calculateSpeed();
 
 		 if(rotation != rotationOld){
@@ -861,6 +859,17 @@ void readAccelerometer(){
 	accValues[2] = (accZ / 32767.0) * 2;
 
 	accAngle = atan(accValues[0]/accValues[2])*180/M_PI;
+
+	// moving average
+	for(int i = 0; i< simpleNum; i++){
+	  simpleAvgAngle[i] = simpleAvgAngle[i+1];
+	}
+	simpleAvgAngle[simpleNum-1] = accAngle;
+	angle =0;
+	for(int i = 0; i< simpleNum; i++){
+	  angle += simpleAvgAngle[i];
+	}
+	angle /= simpleNum;
 }
 
 void calculateGyroAngle(){
@@ -939,6 +948,43 @@ void targetUpdate(){
 
 	}
 }
+
+
+void angleInit(){
+	float D = 0;
+	uint8_t counter = 0;
+	uint8_t flag = 0;
+	for(int i = 0; i < 100; i++){
+		leftSetup[i] = 0;
+	}
+	while(isReady){
+		readAccelerometer();
+		//for(int i = 0; i < 99; i++){
+		//	leftSetup[i] = leftSetup[i+1];
+		//}
+		//leftSetup[99] = angle;
+		D = leftSetup[98] - angle;
+		if (D < abs((int)minD) && abs((int)angle) < 5){
+			minD = D;
+			minDAngle[counter] = angle;
+			flag = 1;
+		}
+		if (abs((int)angle) > 5 && flag){
+			counter++;
+			flag = 0;
+		}
+		if(minDAngle[4]){
+			isReady = 0;
+		}
+		HAL_Delay(5);
+	}
+	setpoint = 0;
+	for(int i = 0; i<5; i++){
+		setpoint += minDAngle[i];
+	}
+	setpoint /= 5;
+}
+
 /* USER CODE END 4 */
 
 /**
