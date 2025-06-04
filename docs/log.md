@@ -128,5 +128,18 @@ if the motrs are not moveing
 
 ## 📅 June 02, 2025
 - 🔍 Watched state space tutorials 
+- 🔧 got new Buck converter (the same as the last one)
+
+
+## 📅 June 03, 2025
+- 🔍 played with the examples from the tutorials
+- 💻 tried to implement angle correction on startup
+    - i oscilate it by hand and it finds where the delta is smallest
+     unfortunately (i suppose due to the noise of the accelerometer) this way the resulted setpoint is far from the actual zero
+- 💻 changed the Kd to be basesd on the previous angle and not on the error to presumably limit the efect on the error based on the adaptive function that changes the angle
+- 💻 remove the Ki because of double integration!!!
+- 🔍 watched more from the control bootcamp
+
+
 
 
