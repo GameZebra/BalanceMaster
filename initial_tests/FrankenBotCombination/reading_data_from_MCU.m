@@ -35,15 +35,15 @@ for i = 1:numSequences
     % Extract the current sequence
     sequence = buffer(startIdx:endIdx);
     
-    tick(i) = typecast(uint8(sequence(1:4)), 'uint32');
-    gyroAngle(i) = typecast(uint8(sequence(5:8)), 'single');
-    accAngle(i) = typecast(uint8(sequence(9:12)), 'single');
-    angle(i) = typecast(uint8(sequence(13:16)), 'single');
-    setpoint(i) = typecast(uint8(sequence(17:20)), 'single');
-    encoderL(i) = typecast(uint8(sequence(21:22)), 'int16');
-    encoderR(i) = typecast(uint8(sequence(23:24)), 'int16');
-    encoderLSpeed(i) = typecast(uint8(sequence(25:26)), 'int16');
-    encoderRSpeed(i) = typecast(uint8(sequence(27:28)), 'int16');
+    tick(i) = typecast(uint8((sequence(1:4))), 'uint32');
+    gyroAngle(i) = typecast(uint8((sequence(5:8))), 'single');
+    accAngle(i) = typecast(uint8((sequence(9:12))), 'single');
+    angle(i) = typecast(uint8((sequence(13:16))), 'single');
+    setpoint(i) = typecast(uint8((sequence(17:20))), 'single');
+    encoderL(i) = typecast(uint8((sequence(21:22))), 'int16');
+    encoderR(i) = typecast(uint8((sequence(23:24))), 'int16');
+    encoderLSpeed(i) = typecast(uint8((sequence(25:26))), 'int16');
+    encoderRSpeed(i) = typecast(uint8((sequence(27:28))), 'int16');
 
 
 end
