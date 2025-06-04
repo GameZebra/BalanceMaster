@@ -793,7 +793,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		readAccelerometer();
 		getEncoders();
 		calculateSpeed();
-		pcTransmit();
+		pcTransmitBin();
 
 		 if(rotation != rotationOld){
 			 dirChange = 1;
@@ -990,47 +990,33 @@ void angleInit(){
 	}
 	setpoint /= 5;
 }
-void pcTransmit(){
+void pcTransmitBin(){
 	//time stamp
 	uint32_t tick = HAL_GetTick();
-	uint8_t comma = ',';
+	uint8_t zero = 0;
 	uint8_t end[2] = "\r\n";
 	HAL_UART_Transmit(&huart5, &tick, 4, 10);
-	HAL_UART_Transmit(&huart5, &comma, 1, 10);
+
 	// angles
-	/*HAL_UART_Transmit(&huart5, &gyroAngle, 4, 10);
-	HAL_UART_Transmit(&huart5, &comma, 1, 10);
+	HAL_UART_Transmit(&huart5, &gyroAngle, 4, 10);
 	HAL_UART_Transmit(&huart5, &accAngle, 4, 10);
-	HAL_UART_Transmit(&huart5, &comma, 1, 10);
 	HAL_UART_Transmit(&huart5, &angle, 4, 10);
-	HAL_UART_Transmit(&huart5, &comma, 1, 10);
 	HAL_UART_Transmit(&huart5, &setpoint, 4, 10);
-	HAL_UART_Transmit(&huart5, &comma, 1, 10);
 
 	//encoders
 	HAL_UART_Transmit(&huart5, &encoderL, 2, 10);
-	HAL_UART_Transmit(&huart5, &comma, 1, 10);
 	HAL_UART_Transmit(&huart5, &encoderR, 2, 10);
-	HAL_UART_Transmit(&huart5, &comma, 1, 10);
 	HAL_UART_Transmit(&huart5, &encoderLSpeed, 2, 10);
-	HAL_UART_Transmit(&huart5, &comma, 1, 10);
 	HAL_UART_Transmit(&huart5, &encoderRSpeed, 2, 10);
-	HAL_UART_Transmit(&huart5, &comma, 1, 10);
 
 	// control
-	HAL_UART_Transmit(&huart5, &error, 4, 10);
-	HAL_UART_Transmit(&huart5, &comma, 1, 10);
-	HAL_UART_Transmit(&huart5, &speed, 1, 10);
-	HAL_UART_Transmit(&huart5, &comma, 1, 10);
-	HAL_UART_Transmit(&huart5, &Kp, 4, 10);
-	HAL_UART_Transmit(&huart5, &comma, 1, 10);
-	HAL_UART_Transmit(&huart5, &Ki, 4, 10);
-	HAL_UART_Transmit(&huart5, &comma, 1, 10);
-	HAL_UART_Transmit(&huart5, &Kd, 4, 10);
-	HAL_UART_Transmit(&huart5, &comma, 1, 10);
-*/
-	// end of transmission
-	HAL_UART_Transmit(&huart5, end, 2, 10);
+	//HAL_UART_Transmit(&huart5, &error, 4, 10);
+	//HAL_UART_Transmit(&huart5, &zero, 1, 10);
+	//HAL_UART_Transmit(&huart5, &speed, 1, 10);
+	//HAL_UART_Transmit(&huart5, &Kp, 4, 10);
+	//HAL_UART_Transmit(&huart5, &Ki, 4, 10);
+	//HAL_UART_Transmit(&huart5, &Kd, 4, 10);
+
 }
 
 /* USER CODE END 4 */
