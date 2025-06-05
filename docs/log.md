@@ -139,7 +139,26 @@ if the motrs are not moveing
 - 💻 changed the Kd to be basesd on the previous angle and not on the error to presumably limit the efect on the error based on the adaptive function that changes the angle
 - 💻 remove the Ki because of double integration!!!
 - 🔍 watched more from the control bootcamp
+- 🧠 I talked with my mentor and it is highly advisable to have recordings of the performance of the robot in different strategies
+    - with or without Ki
+    - for this i have TODO a matlab file that can record the internal states of my robot
+
+## 📅 June 04, 2025
+- 🔍 watched more from the control bootcamp
+- 💻 created a function that prints the important data to the PC via UART
+    - the problem is that when i try to print everything the controll is visibly slower
+    - Probbably i will have to use DMA for this
+    - or just up the clock speed of the MCU because right now it is at 8 MHz
+- 🔍 an interesting fact is the data types with wich the data from the experiment .txt .dat .bin
+    - to save the data in .txt will require to convert the data to string first which is impractical for real time aplications
+    - so i'll save the data as .bin and convert it in matlab later
+    - .dat is some form of hybrid between the two where the data can be different file formats
+- 💻 definately the responsiveness improved with increasing the clock speed
+- 🔍 a little research about DMA
+- 💻 also created matlab file that gets .bin file (from the experiments) and gets and plots the data
 
 
-
+## TODO
+- digital filtration for the derivative
+- the angle correction i think should be based on the movement of the robot and not exactly on the way it wants to move
 
