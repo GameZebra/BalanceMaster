@@ -306,8 +306,9 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
@@ -318,7 +319,7 @@ void SystemClock_Config(void)
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSE;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
@@ -536,7 +537,7 @@ static void MX_TIM8_Init(void)
 
   /* USER CODE END TIM8_Init 1 */
   htim8.Instance = TIM8;
-  htim8.Init.Prescaler = 8;
+  htim8.Init.Prescaler = 16;
   htim8.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim8.Init.Period = 1000;
   htim8.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -579,7 +580,7 @@ static void MX_TIM10_Init(void)
 
   /* USER CODE END TIM10_Init 1 */
   htim10.Instance = TIM10;
-  htim10.Init.Prescaler = 8;
+  htim10.Init.Prescaler = 16;
   htim10.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim10.Init.Period = 5000;
   htim10.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -610,7 +611,7 @@ static void MX_TIM11_Init(void)
 
   /* USER CODE END TIM11_Init 1 */
   htim11.Instance = TIM11;
-  htim11.Init.Prescaler = 8000;
+  htim11.Init.Prescaler = 16000;
   htim11.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim11.Init.Period = 1000;
   htim11.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -801,7 +802,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		 }
 		 else{
 			 //dirChange = 0;
-			 if(abs((int)error) < 0.2){
+			 if(fabs(error) < 0.2){
 				 moved++;
 			 }
 
@@ -890,6 +891,9 @@ void calculateSpeed(){
 	error = setpoint - gyroAngle;
 	integral += error * dt;
 	derivative = (gyroAngle - previousAngle) / dt;
+	if(derivative>127.0/Kd){
+		derivative = 127;
+	}
 	output = Kp * error + Ki * integral + Kd * derivative;
 	previous_error = error;
 	previousAngle = angle;
@@ -946,7 +950,7 @@ void targetUpdate(){
 	setpoint += setPointDelta*sign;
 	if(signOld != sign){
 		signChanges++;
-		if(signChanges > 5 && error < 0.2 && speed < 20){
+		if(signChanges > 5 && speed < 20){
 			setPointDelta *= 0.8f;
 			signChanges = 0;
 		}
@@ -1010,12 +1014,13 @@ void pcTransmitBin(){
 	HAL_UART_Transmit(&huart5, &encoderRSpeed, 2, 10);
 
 	// control
-	//HAL_UART_Transmit(&huart5, &error, 4, 10);
-	//HAL_UART_Transmit(&huart5, &zero, 1, 10);
-	//HAL_UART_Transmit(&huart5, &speed, 1, 10);
-	//HAL_UART_Transmit(&huart5, &Kp, 4, 10);
-	//HAL_UART_Transmit(&huart5, &Ki, 4, 10);
-	//HAL_UART_Transmit(&huart5, &Kd, 4, 10);
+	HAL_UART_Transmit(&huart5, &error, 4, 10);
+	HAL_UART_Transmit(&huart5, &zero, 1, 10);
+	HAL_UART_Transmit(&huart5, &speed, 1, 10);
+	HAL_UART_Transmit(&huart5, &Kp, 4, 10);
+	HAL_UART_Transmit(&huart5, &Ki, 4, 10);
+	HAL_UART_Transmit(&huart5, &Kd, 4, 10);
+	HAL_UART_Transmit(&huart5, &derivative, 4, 10);
 
 }
 
