@@ -9,6 +9,7 @@
 #define qik_2s12v10_lib
 
 #include <stdint.h>
+#include "stm32f4xx_hal.h"
 
 #define getFirmwareVersion 	0x81
 #define getErrorByte 		0x82
@@ -74,6 +75,10 @@ extern uint8_t rotation;
 extern uint8_t rotationOld;
 extern uint8_t speed;
 extern uint8_t brake;
+
+
+void  MotorsBrake(UART_HandleTypeDef *huart, uint8_t *brake);
+void MotorsOn(UART_HandleTypeDef *huart, uint8_t *speed, uint8_t rotation);
 
 
 #endif /* INC_QIK_2S12V10_LIB_H_ */

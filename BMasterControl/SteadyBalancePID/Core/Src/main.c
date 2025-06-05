@@ -128,7 +128,29 @@ int main(void)
   while (1)
   {
 	  //speed = motor0[0];
+
+	  uint8_t testSpeed = 127;
+	  MotorsOn(&huart2, &testSpeed, 0);
+		//HAL_UART_Transmit(&huart2, &motor0[rotation], 1, 20);
+		//HAL_UART_Transmit(&huart2, &testSpeed, 1, 20);
+		//HAL_UART_Transmit(&huart2, &motor1[rotation], 1, 20);
+		//HAL_UART_Transmit(&huart2, &testSpeed, 1, 20);
+
+
+
+
+	  HAL_Delay(300);
+	  MotorsBrake(&huart2, &testSpeed);
+	  //HAL_UART_Transmit(&huart2, &motor0[1], 1, 20);
+	  //HAL_UART_Transmit(&huart2, &testSpeed, 1, 20);
+	  //HAL_UART_Transmit(&huart2, &motor1[1], 1, 20);
+	  //HAL_UART_Transmit(&huart2, &testSpeed, 1, 20);
+	  HAL_Delay(1500);
+
+
 	  /* USER CODE END WHILE */
+
+
 
     /* USER CODE BEGIN 3 */
   }
