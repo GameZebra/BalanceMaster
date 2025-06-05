@@ -69,9 +69,9 @@ uint8_t speed = 0;
 uint8_t brake = 127;
 
 // PID constants
-float Kp =  40.0f;
+float Kp =  25.0f;
 float Ki =  0.0f;
-float Kd = 0.30f;
+float Kd = 0.07f;
 
 //float integralMax = 127/Ki;
 
@@ -875,6 +875,12 @@ void readAccelerometer(){
 	  angle += simpleAvgAngle[i];
 	}
 	angle /= simpleNum;
+
+	if(fabs(angle) > 80.0f){
+		angle = previousAngle;
+	}
+
+
 }
 
 void calculateGyroAngle(){
@@ -898,10 +904,10 @@ void calculateSpeed(){
 	previous_error = error;
 	previousAngle = angle;
 
-	if (error<-0.0){
+	if (error<-0.2){
 		rotation = 2;
 	}
-	else if (error>0.0){
+	else if (error>0.2){
 		rotation = 0;
 	}
 	else{

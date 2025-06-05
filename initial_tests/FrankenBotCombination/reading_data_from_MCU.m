@@ -7,7 +7,7 @@ clear
 fileID = fopen('PCCommunicationTest_05_derivative.bin', 'r');
 
 % Determine the length of one sequence in bytes
-sequenceLength = 4 + 4*4 + 4*2 + 4 +2*1 + 4*4 + 2*4; 
+sequenceLength = 4 + 4*4 + 4*2 + 4 +2*1 + 4*4 %+ 2*4; 
 
 % Read the entire file into a buffer
 buffer = fread(fileID, Inf, 'uint8');
@@ -64,8 +64,8 @@ for i = 1:numSequences
     Kd(i) = typecast(uint8((sequence(43:46))), 'single');
     derivative(i) = typecast(uint8((sequence(47:50))), 'single');
 
-    accX(i) = typecast(uint8((sequence(51:54))), 'single');
-    accZ(i) = typecast(uint8((sequence(55:58))), 'single');
+   % accX(i) = typecast(uint8((sequence(51:54))), 'single');
+   % accZ(i) = typecast(uint8((sequence(55:58))), 'single');
 end
 
 %% plot some data
@@ -73,8 +73,9 @@ Td = 0.005;
 Time=0:Td:(numSequences-1)*Td;
 
 figure(1);
-plot(Time, angle'), grid on;
+plot(Time, angle'), hold on, grid on;
 title('Angle over time');
+plot(Time, accAngle');
 
 figure(2);
 plot(Time, setpoint'), grid on;
@@ -88,3 +89,7 @@ title('distance traveled by the wheels');
 
 figure(4);
 plot(Time, derivative'), grid on;
+
+%% data filtration
+
+
