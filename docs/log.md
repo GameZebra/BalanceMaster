@@ -156,9 +156,23 @@ if the motrs are not moveing
 - 💻 definately the responsiveness improved with increasing the clock speed
 - 🔍 a little research about DMA
 - 💻 also created matlab file that gets .bin file (from the experiments) and gets and plots the data
+    - I should have done this sooner
+
+## 📅 June 05, 2025
+- 🔍 how to create header files in c, how are they connected, what to declare where and how to use them
+    - fun fact when creating global variables in .h files they won't be created unless used insed the main file (the compiler decedes to optimize them)
+- 💻 created separet .h files for different functionalities
+    - for controlling the motors
+- 🧠 I talked with my mentor: if i have some unbelievable value like 3.2*10^38 degrees (for the robot angle) i can just use the previous value
+    - I made it if it is larger than 80 degrees to use the previous value
+- 🧠 If the biggest problem for my control is the derivative because the accelerometer becomes very spike from the motr noise
+I can just use the gyroscope for it
+- 🧠 And the algorythm for the space correction will stabilize small imperfections of my zero position
+
 
 
 ## TODO
 - digital filtration for the derivative
+- use the gyro for the derivative
 - the angle correction i think should be based on the movement of the robot and not exactly on the way it wants to move
 
