@@ -69,15 +69,15 @@ uint8_t speed = 0;
 uint8_t brake = 127;
 
 // PID constants
-float Kp =  25.0f;
+float Kp =  28.0f;
 float Ki =  0.0f;
-float Kd = 0.07f;
+float Kd = 3.0f;
 
 //float integralMax = 127/Ki;
 
 // target
-float setpoint = -1.230;
-float setPointDelta = 0.01;
+float setpoint = -0.2;
+float setPointDelta = 0.00;
 uint8_t isReady = 1;
 float leftSetup[100];
 float previousAngle = 0;
@@ -116,8 +116,8 @@ int16_t accY = 0;
 int16_t accZ = 0;
 float accValues[3];
 float accAngle = 0;
-uint8_t simpleNum = 10;
-float simpleAvgAngle[10];
+uint8_t simpleNum = 13;
+float simpleAvgAngle[13];
 
 uint8_t isEnabled = 0;
 uint8_t enableAcc[2] = {0x20, 0x67};
@@ -893,8 +893,7 @@ void calculateGyroAngle(){
 }
 
 void calculateSpeed(){
-	gyroAngle = angle;
-	error = setpoint - gyroAngle;
+	error = setpoint - angle;
 	integral += error * dt;
 	derivative = (gyroAngle - previousAngle) / dt;
 	if(derivative>127.0/Kd){
@@ -902,12 +901,12 @@ void calculateSpeed(){
 	}
 	output = Kp * error + Ki * integral + Kd * derivative;
 	previous_error = error;
-	previousAngle = angle;
+	previousAngle = gyroAngle;
 
-	if (error<-0.2){
+	if (error<-0.05){
 		rotation = 2;
 	}
-	else if (error>0.2){
+	else if (error>0.05){
 		rotation = 0;
 	}
 	else{
