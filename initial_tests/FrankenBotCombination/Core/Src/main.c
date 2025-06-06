@@ -80,7 +80,7 @@ float setpoint = -0.2;
 float setPointDelta = 0.00;
 uint8_t isReady = 1;
 float leftSetup[100];
-float previousAngle = 0;
+float previousAngle = 0; // inside accelerometer
 float minD = 100;
 float minDAngle[5] = {0, 0, 0, 0, 0};
 int8_t sign = 1;

@@ -25,8 +25,15 @@ void MotorsBrake(UART_HandleTypeDef *huart, uint8_t *brake){
 void MotorsOn(UART_HandleTypeDef *huart, uint8_t *speed, uint8_t rotation){
 	HAL_UART_Transmit(huart, &motor0[rotation], 1, 20);
 	HAL_UART_Transmit(huart, speed, 1, 20);
-	// HAL_Delay(10);
 	HAL_UART_Transmit(huart, &motor1[rotation], 1, 20);
 	HAL_UART_Transmit(huart, speed, 1, 20);
-	//HAL_Delay(10);
+}
+
+
+void TestDriver(UART_HandleTypeDef *huart){
+	  uint8_t testSpeed = 127;
+	  MotorsOn(huart, &testSpeed, 0);
+	  HAL_Delay(300);
+	  MotorsBrake(huart, &testSpeed);
+	  HAL_Delay(1500);
 }

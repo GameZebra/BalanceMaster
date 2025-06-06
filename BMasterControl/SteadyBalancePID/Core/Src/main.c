@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "qik_2s12v10_lib.h"
+#include "accelerometer.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -121,32 +122,19 @@ int main(void)
   MX_TIM11_Init();
   /* USER CODE BEGIN 2 */
 
+  AccelInit(&hspi1);
+
+
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  //speed = motor0[0];
-
-	  uint8_t testSpeed = 127;
-	  MotorsOn(&huart2, &testSpeed, 0);
-		//HAL_UART_Transmit(&huart2, &motor0[rotation], 1, 20);
-		//HAL_UART_Transmit(&huart2, &testSpeed, 1, 20);
-		//HAL_UART_Transmit(&huart2, &motor1[rotation], 1, 20);
-		//HAL_UART_Transmit(&huart2, &testSpeed, 1, 20);
-
-
-
-
-	  HAL_Delay(300);
-	  MotorsBrake(&huart2, &testSpeed);
-	  //HAL_UART_Transmit(&huart2, &motor0[1], 1, 20);
-	  //HAL_UART_Transmit(&huart2, &testSpeed, 1, 20);
-	  //HAL_UART_Transmit(&huart2, &motor1[1], 1, 20);
-	  //HAL_UART_Transmit(&huart2, &testSpeed, 1, 20);
-	  HAL_Delay(1500);
-
+	  //TestDriver(&huart2);
+	  readAccelerometer(&hspi1);
 
 	  /* USER CODE END WHILE */
 

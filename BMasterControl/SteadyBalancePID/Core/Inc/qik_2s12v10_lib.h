@@ -77,8 +77,10 @@ extern uint8_t speed;
 extern uint8_t brake;
 
 
-void  MotorsBrake(UART_HandleTypeDef *huart, uint8_t *brake);
+void MotorsBrake(UART_HandleTypeDef *huart, uint8_t *brake);
 void MotorsOn(UART_HandleTypeDef *huart, uint8_t *speed, uint8_t rotation);
+
+void TestDriver(UART_HandleTypeDef *huart);
 
 
 #endif /* INC_QIK_2S12V10_LIB_H_ */
