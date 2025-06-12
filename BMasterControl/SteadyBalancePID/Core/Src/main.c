@@ -125,7 +125,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   AccelInit(&hspi1);
-
+  HAL_TIM_Base_Start(&htim8);
+  HAL_ADC_Start_IT(&hadc1);
 
 
 
@@ -137,7 +138,7 @@ int main(void)
   {
 	  //TestDriver(&huart2);
 	  readAccelerometer(&hspi1);
-
+	  volatile gyroAngle;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -624,6 +625,9 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+
+
 
 /* USER CODE END 4 */
 

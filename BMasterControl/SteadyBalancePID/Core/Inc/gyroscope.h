@@ -10,7 +10,7 @@
 
 
 #include "stm32f4xx_hal.h"
-
+#include "math.h"
 
 
 // Gyro
@@ -19,10 +19,13 @@ extern float angularVelocity;
 extern float measuredVoltage;
 extern float gyroAngle;
 extern float previousGyroAngle;
-
+extern float gyroTd;
+extern float gyroAVelocityBias;
+extern float gyroConstant;
+extern float maxDiviat;
 
 
 void calculateGyroAngle(); // before using there should be ADC reading of the sensor
-
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc);
 
 #endif /* GYROSCOPE_H_ */
