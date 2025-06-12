@@ -169,7 +169,14 @@ if the motrs are not moveing
 I can just use the gyroscope for it
 - 🧠 And the algorythm for the space correction will stabilize small imperfections of my zero position
 
-
+## 📅 June 12, 2025
+- :page_facing_up: made a schematic of the controll for the PID algorythm
+- 🧠 My mentor gave me a genious idea kinda feel bad for not figuring it out alone:
+    - when the P is too low, the robot is not responsive enough, when the P is too high the robot starts oscilating 
+    and becomes unstable
+        - the solution? figure out a law by witch to change the P coeficient, insted of beeing constant
+    - to do that effectively i have to study the law by witch the robot falls.
+        - I'll have to figure out a way to drop the robot reliably from different heights 
 
 ## TODO
 - digital filtration for the derivative
