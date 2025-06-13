@@ -178,6 +178,11 @@ I can just use the gyroscope for it
     - to do that effectively i have to study the law by witch the robot falls.
         - I'll have to figure out a way to drop the robot reliably from different heights 
 
+
+## 📅 June 13, 2025
+- 🔍 I spend a lot of time figuring out how do electric motors work, why while moveing they draw almost no current. 
+What is back EMF, interesting stuff.
+
 ## TODO
 - digital filtration for the derivative
 - use the gyro for the derivative
