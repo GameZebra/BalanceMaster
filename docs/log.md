@@ -180,8 +180,13 @@ I can just use the gyroscope for it
 
 
 ## 📅 June 13, 2025
+- 🔧 I installed a Boost convertor on the robot hoping that this will increase the speed of the motors and give me the opportunity to save the robot from larger angles.
+
+
+## 📅 June 15, 2025
 - 🔍 I spend a lot of time figuring out how do electric motors work, why while moveing they draw almost no current. 
 What is back EMF, interesting stuff.
+
 
 ## TODO
 - digital filtration for the derivative
