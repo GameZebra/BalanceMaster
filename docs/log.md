@@ -178,14 +178,22 @@ I can just use the gyroscope for it
     - to do that effectively i have to study the law by witch the robot falls.
         - I'll have to figure out a way to drop the robot reliably from different heights 
 
-
 ## 📅 June 13, 2025
-- 🔧 I installed a Boost convertor on the robot hoping that this will increase the speed of the motors and give me the opportunity to save the robot from larger angles.
-
-
-## 📅 June 15, 2025
 - 🔍 I spend a lot of time figuring out how do electric motors work, why while moveing they draw almost no current. 
 What is back EMF, interesting stuff.
+
+## 📅 June 15, 2025
+- 🔧 I installed a 15A Boost convertor on the robot hoping that this will increase the speed of the motors and give me the opportunity to save the robot from larger angles.
+- 🧠 but it didn't solve the problem with the undervoltage protection of the BMS, 
+when the motors try to spin fast the instant current is too high and the batteries voltage drops too low
+
+
+## 📅 June 16, 2025
+- 🧠 because the boost convertor takes more current than the buck convertor to acheive the same energy, i decided to swap it for another buck convertor
+- 🔧 swapped the 15A boost convertor with 10A Buck convertor which i hope to be enoudg.
+- 🧠 the problem persists, the undervoltage protection kicks in
+
+
 
 
 ## TODO
