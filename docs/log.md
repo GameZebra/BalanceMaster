@@ -193,6 +193,11 @@ when the motors try to spin fast the instant current is too high and the batteri
 - 🔧 swapped the 15A boost convertor with 10A Buck convertor which i hope to be enoudg.
 - 🧠 the problem persists, the undervoltage protection kicks in
 
+## 📅 June 17, 2025
+- 🔍 I researched thet the internal resistance of the batteries plays a key role in the voltage drop they experience when a big load is connected
+- 🔧 swapped the 10A green batteries with 20A pink batteries which should have lower internal resistance 
+- 🔧 a little adaptation for them to fit in the case
+- 🧠 at first there was no improvement but aafter CHARGING the batteries i resolved the issue
 
 
 
