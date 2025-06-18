@@ -200,6 +200,9 @@ when the motors try to spin fast the instant current is too high and the batteri
 - 🧠 at first there was no improvement but aafter CHARGING the batteries i resolved the issue
 
 
+## 📅 June 18, 2025
+- 🔍 I researched the Kalman filter, it seams there is an easy 1d version that i can try out
+
 
 ## TODO
 - digital filtration for the derivative
