@@ -70,14 +70,14 @@ uint8_t speed = 0;
 uint8_t brake = 127;
 
 // PID constants
-float Kp =  20.0f;
+float Kp =  3.0f;
 float Ki =  0.0f;
-float Kd = 1.5f;
+float Kd = 2.0f;
 
 //float integralMax = 127/Ki;
 
 // target
-float setpoint = -0.2;
+float setpoint = -0.5;
 float setPointDelta = 0.00;
 uint8_t isReady = 1;
 float leftSetup[100];
@@ -130,6 +130,8 @@ uint8_t const range = 2;
 // debug
 float angle = 0;
 float dMAX = 0;
+float lineFixed = 8;
+float lineSpeed = 0.3;
 
 
 // encoders
@@ -948,6 +950,7 @@ void calculateGyroAngle(){
 void calculateSpeed(){
 	error = setpoint - angle;
 	integral += error * dt;
+	Kp = (int)(lineSpeed*fabs(error))+lineFixed;
 	derivative = (gyroAngle - previousAngle) / dt;
 	if(derivative>127.0/Kd){
 		derivative = 127;
@@ -956,10 +959,10 @@ void calculateSpeed(){
 	previous_error = error;
 	previousAngle = gyroAngle;
 
-	if (error<-0.05){
+	if (error<-0.005){
 		rotation = 2;
 	}
-	else if (error>0.05){
+	else if (error>0.005){
 		rotation = 0;
 	}
 	else{

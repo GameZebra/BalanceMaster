@@ -124,7 +124,7 @@ int main(void)
    command = 0x86;
    data = 127;
    HAL_UART_Transmit(&huart2, &command, 1, 20);
-   HAL_UART_Transmit(&huart2, &data, 1, 20);
+     HAL_UART_Transmit(&huart2, &data, 1, 20);
    // check current while braking
    command = 0x90;
    HAL_UART_Transmit(&huart2, &command, 1, 20);
