@@ -24,6 +24,9 @@
 #include "qik_2s12v10_lib.h"
 #include "accelerometer.h"
 #include "gyroscope.h"
+#include "encoders.h"
+#include "control.h"
+#include "uart_debug.h"
 
 /* USER CODE END Includes */
 
