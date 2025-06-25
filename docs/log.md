@@ -203,6 +203,8 @@ when the motors try to spin fast the instant current is too high and the batteri
 ## 📅 June 18, 2025
 - 🔍 I researched the Kalman filter, it seams there is an easy 1d version that i can try out
 
+## 📅 June 25, 2025
+- 💻 finished the lib files so that i will have a working workspace that is functional 
 
 ## TODO
 - digital filtration for the derivative
