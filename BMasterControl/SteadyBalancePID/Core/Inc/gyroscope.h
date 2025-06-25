@@ -22,6 +22,8 @@ extern float previousGyroAngle;
 extern float gyroTd;
 extern float gyroAVelocityBias;
 extern float gyroConstant;
+
+// debug
 extern float maxDiviat;
 
 

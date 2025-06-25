@@ -105,5 +105,12 @@ float movingAverage(){
 	return angle;
 }
 
+// Low Pass Filter
+
+// Kalman Filter
+
+
+
+
 
 
