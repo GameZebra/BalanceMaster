@@ -1,7 +1,10 @@
+clear all;
+close all;
+
 %% Test signal
 t = 0:0.01:10;
-true_signal = sin(t)+2;
-noise = 0.2 * randn(size(t));
+true_signal = sin(4*t)+2;
+noise = 0.2 * randn(size(t)) + 0.05*sin(400*t) ;
 
 noisy_signal = true_signal + noise;
 
@@ -21,13 +24,43 @@ b = (1/windowSize)*ones(1,windowSize);
 a = 1;
 filtered_signal = filter(b, a, noisy_signal);
 
-plot(t, filtered_signal, 'y');
+plot(t, filtered_signal, 'y', 'LineWidth', 2);
 legend('Noisy', 'True', 'Moving Avg');
 
 %% low pass filter
-
+% iir butter filter with matlab functions 
 fs = 100; % Sampling frequency
-fc = 3;   % Cut-off frequency
+fc = 6;   % Cut-off frequency
 [b, a] = butter(2, fc/(fs/2)); % 2nd-order filter
 low_passed = filter(b, a, noisy_signal);
-plot(t, low_passed, 'g');
+plot(t, low_passed, 'g', 'LineWidth', 2);
+
+%% exponential filter 
+
+% Exponentially decaying IIR filter demo
+
+% Parameters
+alpha = 0.8;            % Decay factor (0 < alpha < 1)
+N = length(t);                % Number of samples
+x = noisy_signal;        % Input signal
+x(10) = 1;              % Impulse at n=10
+
+% Pre-allocate output
+y = zeros(1, N);
+
+% IIR filter: y[n] = (1 - alpha)*x[n] + alpha*y[n-1]
+for n = 2:N
+    y(n) = (1 - alpha) * x(n) + alpha * y(n-1);
+end
+
+% Plot
+figure(2);
+plot(0:N-1, y);
+title('Exponentially Decaying IIR Filter Response');
+xlabel('n');
+ylabel('y[n]');
+grid on;
+hold on;
+plot(0:N-1, true_signal);
+
+
