@@ -27,20 +27,23 @@ filtered_signal = filter(b, a, noisy_signal);
 plot(t, filtered_signal, 'y', 'LineWidth', 2);
 legend('Noisy', 'True', 'Moving Avg');
 
-%% low pass filter
+
+%% low pass filter (best so far)
 % iir butter filter with matlab functions 
+
 fs = 100; % Sampling frequency
 fc = 6;   % Cut-off frequency
 [b, a] = butter(2, fc/(fs/2)); % 2nd-order filter
 low_passed = filter(b, a, noisy_signal);
-plot(t, low_passed, 'g', 'LineWidth', 2);
+plot(t, low_passed, 'g--', 'LineWidth', 2);
+
 
 %% exponential filter 
 
 % Exponentially decaying IIR filter demo
 
 % Parameters
-alpha = 0.8;            % Decay factor (0 < alpha < 1)
+alpha = 0.9;            % Decay factor (0 < alpha < 1)
 N = length(t);                % Number of samples
 x = noisy_signal;        % Input signal
 x(10) = 1;              % Impulse at n=10
@@ -55,12 +58,14 @@ end
 
 % Plot
 figure(2);
-plot(0:N-1, y);
+plot(t, y);
 title('Exponentially Decaying IIR Filter Response');
-xlabel('n');
-ylabel('y[n]');
+xlabel('t');
+ylabel('y[t]');
 grid on;
 hold on;
-plot(0:N-1, true_signal);
+%plot(t, true_signal);
+
+%% Kalman Filter
 
 

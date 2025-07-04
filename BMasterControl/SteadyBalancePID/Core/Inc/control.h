@@ -51,5 +51,4 @@ extern float dt;  // 1 ms
 
 void calculateSpeed();
 
-
 #endif /* INC_CONTROL_H_ */
