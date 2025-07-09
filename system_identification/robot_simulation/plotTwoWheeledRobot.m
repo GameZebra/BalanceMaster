@@ -48,8 +48,8 @@ function plotTwoWheeledRobot(x, theta, l)
     plot([x, x_top], [wheel_y/2, y_top], 'r-', 'LineWidth', 4, 'Tag','body');
 
     % set body to back
-    robot_body = findobj('Tag', 'body');
-    uistack(robot_body, 'bottom'); 
+    %robot_body = findobj('Tag', 'body');
+    %uistack(robot_body, 'bottom'); 
 
     % Optional: draw center of mass
     plot(x_top, y_top, 'ro', 'MarkerSize', 10, 'MarkerFaceColor', 'r');
