@@ -53,10 +53,13 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 //uint8_t speed = 10;
-uint8_t counter =0;
+uint8_t dir =0;
 float encoderLvalues[10];
 float encoderRvalues[10];
-
+float temp, lSum=0, rSum=0, lSpeed, rSpeed;
+float integralL = 0, integralR = 0, previousLSpeed= 0, previousRSpeed=0;
+int ctrl = 0;
+float kp = 0.05,ki=4,kd=0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -71,6 +74,8 @@ static void MX_TIM5_Init(void);
 static void MX_TIM6_Init(void);
 /* USER CODE BEGIN PFP */
 
+int8_t PID(float setpoint, float measured, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt, uint8_t *rotation);
+uint8_t direction(int8_t speed);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -495,19 +500,30 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   if (htim->Instance == TIM14){
 	  // i must have speed variable
 	  getEncoders(&htim2, &htim3);
-	  // PID that eliminates the steady state error
-	  MotorsOn(&huart2, &speed, 0);
-	  // (2 PIDs actually)
-	  encoderLvalues[counter] = encoderLSpeed;
-	  encoderRvalues[counter] = encoderRSpeed;
-	  counter++;
-	  if (counter >= 9){
-		  counter = 0;
-
+	  // moving average needed (for low speeds)
+	  lSum = 0;
+	  rSum = 0;
+	  for(uint8_t i =9; i>0; i--){
+		  encoderLvalues[i]=encoderLvalues[i-1];
+		  lSum += encoderLvalues[i];
+		  encoderRvalues[i]=encoderRvalues[i-1];
+		  rSum += encoderRvalues[i];
 	  }
+	  encoderRvalues[0] = encoderRSpeed;
+	  encoderLvalues[0] = encoderLSpeed;
+	  lSum += encoderLSpeed;
+	  rSum += encoderRSpeed;
+	  lSpeed = lSum / 10.0;
+	  rSpeed = rSum / 10.0;
+	  // PID that eliminates the steady state error
+	  ctrl = PID(temp, rSpeed, kp, ki, kd, &integralR, &previousRSpeed, 0.0001f, &dir);
+	  speed = abs(ctrl);
+	  MotorsOn(&huart2, &speed, dir);
+	  // (2 PIDs actually)
+
 	  // print the results to the PC
 	  HAL_UART_Transmit(&huart5, &encoderRSpeed, 4, 1);
-	  HAL_UART_Transmit(&huart5, &encoderLSpeed, 4, 1);
+	  //HAL_UART_Transmit(&huart5, &encoderLSpeed, 4, 1);
   }
   if (htim->Instance == TIM6){
 	  //HAL_UART_Transmit(&huart5, encoderLvalues, 40, 1);
@@ -516,7 +532,44 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 }
 
+int8_t PID(float setpoint, float measured, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt, uint8_t *rotation){
+	float error = setpoint - measured;
+	*integral += error * dt;
+	float derivative = (measured - *previousMeasurment)/dt;
+	float control = Kp * error + Ki * *integral + Kd * derivative;
+	*previousMeasurment = measured;
 
+	// direction
+	if (control<-0.005){
+		*rotation = 2;
+	}
+	else if (control>0.005){
+		*rotation = 0;
+	}
+	else{
+		*rotation = 1;
+	}
+
+	// limits
+	if (control<-127){
+		control = -127;
+	}
+	else if (control>127){
+		control = 127;
+	}
+	return (int)control;
+}
+
+uint8_t direction(int8_t speed){
+	uint8_t rotation = 0;
+	if (speed < 0){
+		rotation = 2;
+	}
+	else{
+		rotation = 0;
+	}
+	return rotation;
+}
 
 
 

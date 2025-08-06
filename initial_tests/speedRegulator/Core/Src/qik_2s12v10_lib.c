@@ -12,18 +12,18 @@ uint8_t const motor0[3] = {m0Forward, m0Brake, m0Reverse};	// the left motor
 uint8_t const motor1[3] = {m1Reverese, m1Brake, m1Forward}; // the right motor
 uint8_t rotation = 0;
 uint8_t rotationOld = 0;
-uint8_t speed = 0;
-uint8_t brake = 127;
+int8_t speed = 0;
+int8_t brake = 127;
 
 
-void MotorsBrake(UART_HandleTypeDef *uart2, uint8_t *brake){
+void MotorsBrake(UART_HandleTypeDef *uart2, int8_t *brake){
 	HAL_UART_Transmit(uart2, &motor0[1], 1, 20);
 	HAL_UART_Transmit(uart2, brake, 1, 20);
 	HAL_UART_Transmit(uart2, &motor1[1], 1, 20);
 	HAL_UART_Transmit(uart2, brake, 1, 20);
 }
 
-void MotorsOn(UART_HandleTypeDef *uart2, uint8_t *speed, uint8_t rotation){
+void MotorsOn(UART_HandleTypeDef *uart2, int8_t *speed, uint8_t rotation){
 	HAL_UART_Transmit(uart2, &motor0[rotation], 1, 20);
 	HAL_UART_Transmit(uart2, speed, 1, 20);
 	HAL_UART_Transmit(uart2, &motor1[rotation], 1, 20);
@@ -39,7 +39,7 @@ void TestDriver(UART_HandleTypeDef *huart){
 	  HAL_Delay(1500);
 }
 
-void moveMotors(UART_HandleTypeDef *uart2, TIM_HandleTypeDef *tim5, uint8_t speed){
+void moveMotors(UART_HandleTypeDef *uart2, TIM_HandleTypeDef *tim5, int8_t speed){
 	 if(rotation != rotationOld){
 		 //dirChange = 1;
 		 //moved =0;

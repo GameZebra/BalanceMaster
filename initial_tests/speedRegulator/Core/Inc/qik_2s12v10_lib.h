@@ -75,15 +75,15 @@ extern uint8_t const motor0[3];	// the left motor
 extern uint8_t const motor1[3]; // the right motor
 extern uint8_t rotation;
 extern uint8_t rotationOld;
-extern uint8_t speed;
-extern uint8_t brake;
+extern int8_t speed;
+extern int8_t brake;
 
 
-void MotorsBrake(UART_HandleTypeDef *huart, uint8_t *brake);
-void MotorsOn(UART_HandleTypeDef *huart, uint8_t *speed, uint8_t rotation);
+void MotorsBrake(UART_HandleTypeDef *huart, int8_t *brake);
+void MotorsOn(UART_HandleTypeDef *huart, int8_t *speed, uint8_t rotation);
 
 void TestDriver(UART_HandleTypeDef *huart);
-void moveMotors(UART_HandleTypeDef *uart2, TIM_HandleTypeDef *tim5, uint8_t speed);
+void moveMotors(UART_HandleTypeDef *uart2, TIM_HandleTypeDef *tim5, int8_t speed);
 void usDelay(TIM_HandleTypeDef *tim5, uint32_t us);
 
 #endif /* INC_QIK_2S12V10_LIB_H_ */
