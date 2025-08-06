@@ -71,7 +71,8 @@ void usDelay(TIM_HandleTypeDef *tim5, uint32_t us) {
 
     volatile uint32_t *cnt = tim5->Instance->CNT;
 
-    __HAL_TIM_SET_COUNTER(tim5, us); // Set the counter to number of us
+    __HAL_TIM_SET_COUNTER(tim5, us);
+	// Set the counter to number of us
     HAL_TIM_Base_Start(tim5);        // Fire up the timer
     while (*cnt != 0);                 // Just wait until 0
     HAL_TIM_Base_Stop(tim5);
