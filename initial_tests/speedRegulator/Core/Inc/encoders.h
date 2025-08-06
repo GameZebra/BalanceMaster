@@ -10,11 +10,11 @@
 
 #include "stm32f4xx_hal.h"
 
-extern int16_t encoderL;
-extern int16_t encoderR;
+extern uint16_t encoderL;
+extern uint16_t encoderR;
 
-extern int16_t encoderLOld;
-extern int16_t encoderROld;
+extern uint16_t encoderLOld;
+extern uint16_t encoderROld;
 extern float encoderLSpeed;
 extern float encoderRSpeed;
 #define impConst 0.08844
