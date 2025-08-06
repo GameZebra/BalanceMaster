@@ -75,7 +75,7 @@ static void MX_TIM6_Init(void);
 /* USER CODE BEGIN PFP */
 
 int8_t PID(float setpoint, float measured, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt, uint8_t *rotation);
-uint8_t direction(int8_t speed);
+uint8_t direction(float speed, float histeresis);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -540,15 +540,18 @@ int8_t PID(float setpoint, float measured, float Kp, float Ki, float Kd, float *
 	*previousMeasurment = measured;
 
 	// direction
-	if (control<-0.005){
-		*rotation = 2;
-	}
-	else if (control>0.005){
-		*rotation = 0;
-	}
-	else{
-		*rotation = 1;
-	}
+
+	*rotation = direction(control, 0.005);
+
+	//if (control<-0.005){
+	//	*rotation = 2;
+	//}
+	//else if (control>0.005){
+	//	*rotation = 0;
+	//}
+	//else{
+	//	*rotation = 1;
+	//}
 
 	// limits
 	if (control<-127){
@@ -560,13 +563,16 @@ int8_t PID(float setpoint, float measured, float Kp, float Ki, float Kd, float *
 	return (int)control;
 }
 
-uint8_t direction(int8_t speed){
+uint8_t direction(float speed, float histeresis){
 	uint8_t rotation = 0;
-	if (speed < 0){
+	if (speed< -histeresis){
 		rotation = 2;
 	}
-	else{
+	else if (speed> histeresis){
 		rotation = 0;
+	}
+	else{
+		rotation = 1;
 	}
 	return rotation;
 }
