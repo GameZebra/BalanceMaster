@@ -53,12 +53,12 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 //uint8_t speed = 10;
-uint8_t dir =0;
+uint8_t dirL = 0, dirR = 0;
 float encoderLvalues[10];
 float encoderRvalues[10];
 float temp, lSum=0, rSum=0, lSpeed, rSpeed;
 float integralL = 0, integralR = 0, previousLSpeed= 0, previousRSpeed=0;
-int ctrl = 0;
+int8_t leftCtrl = 0, rightCtrl = 0;
 float kp = 0.05,ki=4,kd=0;
 /* USER CODE END PV */
 
@@ -516,14 +516,18 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	  lSpeed = lSum / 10.0;
 	  rSpeed = rSum / 10.0;
 	  // PID that eliminates the steady state error
-	  ctrl = PID(temp, rSpeed, kp, ki, kd, &integralR, &previousRSpeed, 0.0001f, &dir);
-	  speed = abs(ctrl);
-	  MotorsOn(&huart2, &speed, dir);
+	  rightCtrl = PID(temp, rSpeed, kp, ki, kd, &integralR, &previousRSpeed, encoderTd, &dirR);
+	  leftCtrl = PID(temp, -lSpeed, kp, ki, kd, &integralL, &previousLSpeed, encoderTd, &dirL);
+
+	  leftCtrl = abs(leftCtrl);
+	  LeftMotorSpeed(&huart2, &leftCtrl, dirL);
+	  rightCtrl = abs(rightCtrl);
+	  RightMotorSpeed(&huart2, &rightCtrl, dirR);
 	  // (2 PIDs actually)
 
 	  // print the results to the PC
 	  HAL_UART_Transmit(&huart5, &encoderRSpeed, 4, 1);
-	  //HAL_UART_Transmit(&huart5, &encoderLSpeed, 4, 1);
+	  HAL_UART_Transmit(&huart5, &encoderLSpeed, 4, 1);
   }
   if (htim->Instance == TIM6){
 	  //HAL_UART_Transmit(&huart5, encoderLvalues, 40, 1);
@@ -543,16 +547,6 @@ int8_t PID(float setpoint, float measured, float Kp, float Ki, float Kd, float *
 
 	*rotation = direction(control, 0.005);
 
-	//if (control<-0.005){
-	//	*rotation = 2;
-	//}
-	//else if (control>0.005){
-	//	*rotation = 0;
-	//}
-	//else{
-	//	*rotation = 1;
-	//}
-
 	// limits
 	if (control<-127){
 		control = -127;
@@ -560,7 +554,7 @@ int8_t PID(float setpoint, float measured, float Kp, float Ki, float Kd, float *
 	else if (control>127){
 		control = 127;
 	}
-	return (int)control;
+	return (int8_t)control;
 }
 
 uint8_t direction(float speed, float histeresis){
