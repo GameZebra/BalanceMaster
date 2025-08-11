@@ -59,7 +59,7 @@ float encoderRvalues[10];
 float temp, lSum=0, rSum=0, lSpeed, rSpeed;
 float integralL = 0, integralR = 0, previousLSpeed= 0, previousRSpeed=0;
 int8_t leftCtrl = 0, rightCtrl = 0;
-float kp = 0.05,ki=4,kd=0;
+float kp = 0.01,ki=10,kd=0.00001;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -75,7 +75,7 @@ static void MX_TIM6_Init(void);
 /* USER CODE BEGIN PFP */
 
 int8_t PID(float setpoint, float measured, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt, uint8_t *rotation);
-uint8_t direction(float speed, float histeresis);
+uint8_t direction(float *speed, float histeresis);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -352,7 +352,7 @@ static void MX_TIM6_Init(void)
   htim6.Instance = TIM6;
   htim6.Init.Prescaler = 42;
   htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim6.Init.Period = 1000;
+  htim6.Init.Period = 65535;
   htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
   {
@@ -450,7 +450,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 38400;
+  huart2.Init.BaudRate = 115200;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -498,8 +498,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   UNUSED(htim);
 
   if (htim->Instance == TIM14){
+	  //__HAL_TIM_SET_COUNTER(&htim6, 0);
+	  //HAL_TIM_Base_Start(&htim6);
+
 	  // i must have speed variable
 	  getEncoders(&htim2, &htim3);
+
 	  // moving average needed (for low speeds)
 	  lSum = 0;
 	  rSum = 0;
@@ -515,19 +519,33 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	  rSum += encoderRSpeed;
 	  lSpeed = lSum / 10.0;
 	  rSpeed = rSum / 10.0;
+
+
 	  // PID that eliminates the steady state error
 	  rightCtrl = PID(temp, rSpeed, kp, ki, kd, &integralR, &previousRSpeed, encoderTd, &dirR);
 	  leftCtrl = PID(temp, -lSpeed, kp, ki, kd, &integralL, &previousLSpeed, encoderTd, &dirL);
-
-	  leftCtrl = abs(leftCtrl);
-	  LeftMotorSpeed(&huart2, &leftCtrl, dirL);
 	  rightCtrl = abs(rightCtrl);
+	  leftCtrl = abs(leftCtrl);
+
+
+
 	  RightMotorSpeed(&huart2, &rightCtrl, dirR);
+	  LeftMotorSpeed(&huart2, &leftCtrl, dirL);
+
+
 	  // (2 PIDs actually)
 
 	  // print the results to the PC
 	  HAL_UART_Transmit(&huart5, &encoderRSpeed, 4, 1);
 	  HAL_UART_Transmit(&huart5, &encoderLSpeed, 4, 1);
+
+	  HAL_UART_Transmit(&huart5, &rSpeed, 4, 1);
+	  HAL_UART_Transmit(&huart5, &lSpeed, 4, 1);
+
+	  //HAL_UART_Transmit(&huart5, &rightCtrl, 1, 1);
+	  //HAL_UART_Transmit(&huart5, &leftCtrl, 1, 1);
+	  //HAL_TIM_Base_Stop(&htim6);
+	  //int cnt6 = __HAL_TIM_GET_COUNTER(&htim6);
   }
   if (htim->Instance == TIM6){
 	  //HAL_UART_Transmit(&huart5, encoderLvalues, 40, 1);
@@ -545,7 +563,7 @@ int8_t PID(float setpoint, float measured, float Kp, float Ki, float Kd, float *
 
 	// direction
 
-	*rotation = direction(control, 0.005);
+	*rotation = direction(&control, 0);
 
 	// limits
 	if (control<-127){
@@ -557,16 +575,16 @@ int8_t PID(float setpoint, float measured, float Kp, float Ki, float Kd, float *
 	return (int8_t)control;
 }
 
-uint8_t direction(float speed, float histeresis){
+uint8_t direction(float *speed, float histeresis){
 	uint8_t rotation = 0;
-	if (speed< -histeresis){
+	if (*speed< -histeresis){
 		rotation = 2;
 	}
-	else if (speed> histeresis){
+	else if (*speed> histeresis){
 		rotation = 0;
 	}
 	else{
-		rotation = 1;
+		*speed = 0;
 	}
 	return rotation;
 }
