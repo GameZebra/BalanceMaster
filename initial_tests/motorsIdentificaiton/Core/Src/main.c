@@ -24,6 +24,7 @@
 #include "encoders.h"
 #include "qik_2s12v10_lib.h"
 
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,20 +47,21 @@ TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim5;
 TIM_HandleTypeDef htim6;
+TIM_HandleTypeDef htim13;
 TIM_HandleTypeDef htim14;
 
 UART_HandleTypeDef huart5;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-//uint8_t speed = 10;
 uint8_t dirL = 0, dirR = 0;
 float encoderLvalues[10];
 float encoderRvalues[10];
 float temp, lSum=0, rSum=0, lSpeed, rSpeed;
 float integralL = 0, integralR = 0, previousLSpeed= 0, previousRSpeed=0;
 int8_t leftCtrl = 0, rightCtrl = 0;
-float kp = 0.01,ki=18,kd=0;
+float fLCtrl = 0.0, fRCtrl = 0.0;
+uint8_t Sspeed = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -72,10 +74,10 @@ static void MX_UART5_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_TIM5_Init(void);
 static void MX_TIM6_Init(void);
+static void MX_TIM13_Init(void);
 /* USER CODE BEGIN PFP */
-
-int8_t PID(float setpoint, float measured, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt, uint8_t *rotation);
-uint8_t direction(float *speed, float histeresis);
+void statSpeed();
+void timeResponse();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -119,7 +121,9 @@ int main(void)
   MX_USART2_UART_Init();
   MX_TIM5_Init();
   MX_TIM6_Init();
+  MX_TIM13_Init();
   /* USER CODE BEGIN 2 */
+
   HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_1);
   HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_2);
 
@@ -128,8 +132,7 @@ int main(void)
 
 
   HAL_TIM_Base_Start_IT(&htim14);
-  HAL_TIM_Base_Start_IT(&htim6);
-
+  HAL_TIM_Base_Start_IT(&htim13);
 
   /* USER CODE END 2 */
 
@@ -137,6 +140,8 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -371,6 +376,37 @@ static void MX_TIM6_Init(void)
 }
 
 /**
+  * @brief TIM13 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM13_Init(void)
+{
+
+  /* USER CODE BEGIN TIM13_Init 0 */
+
+  /* USER CODE END TIM13_Init 0 */
+
+  /* USER CODE BEGIN TIM13_Init 1 */
+
+  /* USER CODE END TIM13_Init 1 */
+  htim13.Instance = TIM13;
+  htim13.Init.Prescaler = 42000;
+  htim13.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim13.Init.Period = 3000;
+  htim13.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim13.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim13) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM13_Init 2 */
+
+  /* USER CODE END TIM13_Init 2 */
+
+}
+
+/**
   * @brief TIM14 Initialization Function
   * @param None
   * @retval None
@@ -388,7 +424,7 @@ static void MX_TIM14_Init(void)
   htim14.Instance = TIM14;
   htim14.Init.Prescaler = 42;
   htim14.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim14.Init.Period = 100;
+  htim14.Init.Period = 2000;
   htim14.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim14.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim14) != HAL_OK)
@@ -491,11 +527,9 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
-
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   /* Prevent unused argument(s) compilation warning */
-  UNUSED(htim);
 
   if (htim->Instance == TIM14){
 	  __HAL_TIM_SET_COUNTER(&htim6, 0);
@@ -522,10 +556,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 
 	  // PID that eliminates the steady state error
-	  rightCtrl = PID(temp, rSpeed, kp, ki, kd, &integralR, &previousRSpeed, encoderTd, &dirR);
-	  leftCtrl = PID(temp, -lSpeed, kp, ki, kd, &integralL, &previousLSpeed, encoderTd, &dirL);
-	  rightCtrl = abs(rightCtrl);
-	  leftCtrl = abs(leftCtrl);
+	  rightCtrl = Sspeed;
+	  leftCtrl = Sspeed;
+	  fRCtrl= (float)rightCtrl;
+	  fLCtrl= (float)leftCtrl;
 
 
 
@@ -536,59 +570,38 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	  // (2 PIDs actually)
 
 	  // print the results to the PC
-	  HAL_UART_Transmit(&huart5, &encoderRSpeed, 4, 1);
-	  HAL_UART_Transmit(&huart5, &encoderLSpeed, 4, 1);
-
 	  HAL_UART_Transmit(&huart5, &rSpeed, 4, 1);
 	  HAL_UART_Transmit(&huart5, &lSpeed, 4, 1);
 
-	  //HAL_UART_Transmit(&huart5, &rightCtrl, 1, 1);
-	  //HAL_UART_Transmit(&huart5, &leftCtrl, 1, 1);
+	  HAL_UART_Transmit(&huart5, &fRCtrl, 4, 1);
+	  HAL_UART_Transmit(&huart5, &fLCtrl, 4, 1);
+
 	  HAL_TIM_Base_Stop(&htim6);
 	  int cnt6 = __HAL_TIM_GET_COUNTER(&htim6);
   }
-  if (htim->Instance == TIM6){
-	  //HAL_UART_Transmit(&huart5, encoderLvalues, 40, 1);
-	  //HAL_UART_Transmit(&huart5, encoderRvalues, 40, 1);
+
+  if (htim->Instance == TIM13){
+	  //statSpeed();
+	  timeResponse();
   }
 
 }
 
-int8_t PID(float setpoint, float measured, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt, uint8_t *rotation){
-	float error = setpoint - measured;
-	*integral += error * dt;
-	float derivative = (measured - *previousMeasurment)/dt;
-	float control = Kp * error + Ki * *integral + Kd * derivative;
-	*previousMeasurment = measured;
-
-	// direction
-
-	*rotation = direction(&control, 0);
-
-	// limits
-	if (control<-127){
-		control = -127;
-	}
-	else if (control>127){
-		control = 127;
-	}
-	return (int8_t)control;
+void statSpeed(){
+	  Sspeed += 20;
+	  if(Sspeed > 127){
+		  Sspeed = 127;
+	  }
 }
 
-uint8_t direction(float *speed, float histeresis){
-	uint8_t rotation = 0;
-	if (*speed< -histeresis){
-		rotation = 2;
-	}
-	else if (*speed> histeresis){
-		rotation = 0;
+void timeResponse(){
+	if(Sspeed == 0){
+		Sspeed = 80;
 	}
 	else{
-		*speed = 0;
+		Sspeed = 0;
 	}
-	return rotation;
 }
-
 
 
 
