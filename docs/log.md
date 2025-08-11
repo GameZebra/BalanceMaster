@@ -206,6 +206,38 @@ when the motors try to spin fast the instant current is too high and the batteri
 ## 📅 June 25, 2025
 - 💻 finished the lib files so that i will have a working workspace that is functional 
 
+## 📅 July 6, 2025
+- 💻 speed regulator for the motors
+
+## 📅 July 8, 2025
+- 🧠 i'm not in real time, the uart communication is too slow for the stm to operate at 100 micro seconds
+
+## 📅 July 11, 2025
+- 📊  the speed regulator needs 1.9 ms for the body
+    - 🎛️ getting encoders and calculating speed                 - 10 micro secconds
+    - 🎛️ calculating moving average (10 values)                 - 24 micro secconds
+    - 🎛️ calculating motors control                             - 15 micro secconds
+    - 🎛️ communication to motor driver (38400 bps) (4 bytes)    - 1130 micro secconds
+    - 🎛️ communication - debug data (115200 bps) (8 bytes)      - 700 micro secconds
+- 💻 driver communication speed to 115200 bps
+    - 🎛️ communication to motor driver (115200 bps) (4 bytes)   - 386 micro secconds
+    - 📊 the cumulative time is now 1.14 ms
+- 🔍 energy efficiency is not dependant on clock speed but on the voltage of the processor
+and to save energy you need to put the processor in low power mode, so it is actually more efficient to 
+have higher clocks, to finish the task faster and to put the cpu in low power mode afterwards
+- 📊 the program for the visualization is SearilPlot
+    - 🧠 usefull and has the most important feature you can read binary data and interpret it later
+### For today
+- take measurments for the motors
+    - static function
+    - step response
+    - pid values
+- compare both motor responses 
+
+### For tomorow
+- make cascade pid control
+- make 1d calman
+
 ## TODO
 - digital filtration for the derivative
 - use the gyro for the derivative
