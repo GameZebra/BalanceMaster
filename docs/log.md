@@ -213,7 +213,7 @@ when the motors try to spin fast the instant current is too high and the batteri
 - 🧠 i'm not in real time, the uart communication is too slow for the stm to operate at 100 micro seconds
 
 ## 📅 July 11, 2025
-- 📊  the speed regulator needs 1.9 ms for the body
+- 📊 the speed regulator needs 1.9 ms for the body
     - 🎛️ getting encoders and calculating speed                 - 10 micro secconds
     - 🎛️ calculating moving average (10 values)                 - 24 micro secconds
     - 🎛️ calculating motors control                             - 15 micro secconds
@@ -227,6 +227,14 @@ and to save energy you need to put the processor in low power mode, so it is act
 have higher clocks, to finish the task faster and to put the cpu in low power mode afterwards
 - 📊 the program for the visualization is SearilPlot
     - 🧠 usefull and has the most important feature you can read binary data and interpret it later
+
+## 📅 July 12, 2025
+- 💻 matlab file analizing the motors
+    - 📊 the dynamics look close with one motor having lower Kp
+- 💻 tried using matlab iddata for system identification and pidtune 
+    - 🎛️ the results don't look like the actual observations :(
+
+
 ### For today
 - take measurments for the motors
     - static function
