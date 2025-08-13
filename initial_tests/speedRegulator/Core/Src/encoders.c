@@ -17,7 +17,7 @@ float encoderLSpeed = 0;
 float encoderRSpeed = 0;
 
 
-float encoderTd = 0.0001;
+float encoderTd = 0.002;
 
 int16_t encoderLSpeedMax = 0;
 int16_t encoderRSpeedMax = 0;

@@ -59,7 +59,7 @@ float encoderRvalues[10];
 float temp, lSum=0, rSum=0, lSpeed, rSpeed;
 float integralL = 0, integralR = 0, previousLSpeed= 0, previousRSpeed=0;
 int8_t leftCtrl = 0, rightCtrl = 0;
-float kp = 0.01,ki=18,kd=0;
+float kp = 0.202,ki=11.1,kd=0.000303;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -388,7 +388,7 @@ static void MX_TIM14_Init(void)
   htim14.Instance = TIM14;
   htim14.Init.Prescaler = 42;
   htim14.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim14.Init.Period = 100;
+  htim14.Init.Period = 2000;
   htim14.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim14.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim14) != HAL_OK)
