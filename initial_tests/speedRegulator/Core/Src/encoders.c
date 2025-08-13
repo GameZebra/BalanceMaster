@@ -29,10 +29,10 @@ void getEncoders(TIM_HandleTypeDef *T2, TIM_HandleTypeDef *T3){
 	  encoderL = __HAL_TIM_GET_COUNTER(T2);
 	  encoderR = __HAL_TIM_GET_COUNTER(T3);
 
-	  encoderLSpeed = (float)((int16_t)(encoderL-encoderLOld))/encoderTd * impConst; // mm/sec
+	  encoderLSpeed = ((float)((int16_t)(encoderL-encoderLOld))/encoderTd) * impConst; // mm/sec
 	  encoderLOld = encoderL;
 
-	  encoderRSpeed = (float)((int16_t)(encoderR-encoderROld))/encoderTd * impConst; // mm/sec
+	  encoderRSpeed = ((float)((int16_t)(encoderR-encoderROld))/encoderTd) * impConst; // mm/sec
 	  encoderROld = encoderR;
 
 
