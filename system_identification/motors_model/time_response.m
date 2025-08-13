@@ -83,12 +83,12 @@ grid on;
 title('Motor Step Response: Measured vs Model');
 
 %% PID tune
-%sys_c = d2c(motor_model, 'zoh');
-[C_pi,info] = pidtune(motor_model,'PID', 80.0)
-T_pi = feedback(C_pi*motor_model, 1);
+sys_d = c2d(motor_model, 0.002);
+[C_pi,info] = pidtune(sys_d,'PID', 250.0)
+T_pi = feedback(C_pi*sys_d, 1);
 %step(T_pi, 80)
 
-t = 0:0.005:0.5;           % time vector
+t = 0:0.002:0.3;           % time vector
 u = 800 * ones(size(t)); % step input of magnitude 80
 [y, t_out] = lsim(T_pi, u, t);
 
