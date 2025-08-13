@@ -234,13 +234,36 @@ have higher clocks, to finish the task faster and to put the cpu in low power mo
 - 💻 tried using matlab iddata for system identification and pidtune 
     - 🎛️ the results don't look like the actual observations :(
 
+## 📅 July 13, 2025
+- 🧠 plan for the remaining time
+- 📊 waht is the speed of the motors regulator (without load) 
+pid values (Kp = 0.01; Ki =18 Kd =0)
+    - 📊 target 110 mm/s 
+        - overshot 75%
+        - settle time 0.25 s
+    - 📊 target 165 mm/s 
+        - overshot 76%
+        - settle time 0.277 s
+    - 📊 target 441 mm/s 
+        - overshot 75%
+        - settle time 0.401 s
+    - 📊 target 771 mm/s 
+        - overshot 39%
+        - settle time 0.51 s
+- 💻 fixed the mcu Td and the matlab file and now the values it gives are good 
+- 📊 waht is the speed of the motors regulator (without load) 
+pid values (Kp = 0.389; Ki =24.5 Kd =0.000423)
+    - 📊 target 200 mm/s 
+        - overshot %
+        - settle time 0.144 s
+    - 📊 target 800 mm/s 
+        - overshot %
+        - settle time 0.49 s
+    - 📊 target 1000 mm/s 
+        - overshot %
+        - settle time 0.202 s
 
-### For today
-- take measurments for the motors
-    - static function
-    - step response
-    - pid values
-- compare both motor responses 
+
 
 ### For tomorow
 - make cascade pid control

@@ -44,15 +44,15 @@ rMotor = iddata(y, u, Ts);
 % Continuous-time transfer function:  G(s) = K / (tau*s + 1)
 % In MATLAB, that's order [nb nf nk] = [1 1 0] for tfest
 model_order = [2 1 0]; % [nb nf nk]: num coeffs, den coeffs, delay
-motor_model = tfest(rMotor, model_order(1), model_order(2));
+motor_r_model = tfest(rMotor, model_order(1), model_order(2));
 
 % Display model
 disp('Estimated motor model (continuous-time):');
-motor_model
+motor_r_model
 
 % --- Plot comparison ---
-figure;
-compare(rMotor, motor_model);
+figure(2);
+compare(rMotor, motor_r_model);
 grid on;
 title('Motor Step Response: Measured vs Model');
 
@@ -70,21 +70,48 @@ lMotor = iddata(y, u, Ts);
 % Continuous-time transfer function:  G(s) = K / (tau*s + 1)
 % In MATLAB, that's order [nb nf nk] = [1 1 0] for tfest
 model_order = [2 1 0]; % [nb nf nk]: num coeffs, den coeffs, delay
-motor_model = tfest(lMotor, model_order(1), model_order(2));
+motor_l_model = tfest(lMotor, model_order(1), model_order(2));
 
 % Display model
 disp('Estimated motor model (continuous-time):');
-motor_model
+motor_l_model
 
 % --- Plot comparison ---
-figure;
-compare(lMotor, motor_model);
+figure(3);
+compare(lMotor, motor_l_model);
 grid on;
 title('Motor Step Response: Measured vs Model');
 
-%% PID tune
-sys_d = c2d(motor_model, 0.002);
-[C_pi,info] = pidtune(sys_d,'PID', 250.0)
+%% PID R tune
+sys_d = c2d(motor_r_model, 0.002);
+[C_pi,info] = pidtune(sys_d,'PID', 450.0)
+T_pi = feedback(C_pi*sys_d, 1);
+%step(T_pi, 80)
+
+t = 0:0.002:0.3;           % time vector
+u = 800 * ones(size(t)); % step input of magnitude 80
+[y, t_out] = lsim(T_pi, u, t);
+figure(4)
+plot(t_out, y, 'LineWidth', 1.5), hold on
+grid on
+xlabel('Time (s)')
+ylabel('Output')
+title('Step to 800')
+
+sys_d = c2d(motor_r_model, 0.002);
+[C_pi,info] = pidtune(sys_d,'PID', 750.0)
+T_pi = feedback(C_pi*sys_d, 1);
+%step(T_pi, 80)
+
+t = 0:0.002:0.3;           % time vector
+u = 800 * ones(size(t)); % step input of magnitude 80
+[y, t_out] = lsim(T_pi, u, t);
+plot(t_out, y, 'LineWidth', 1.5)
+
+
+%% PID L tune
+sys_d = c2d(motor_r_model, 0.002);
+[C_pi,info] = pidtune(sys_d,'PID', 450.0)
 T_pi = feedback(C_pi*sys_d, 1);
 %step(T_pi, 80)
 
@@ -92,8 +119,22 @@ t = 0:0.002:0.3;           % time vector
 u = 800 * ones(size(t)); % step input of magnitude 80
 [y, t_out] = lsim(T_pi, u, t);
 
+figure(5)
 plot(t_out, y, 'LineWidth', 1.5)
 grid on
 xlabel('Time (s)')
 ylabel('Output')
-title('Step to 80')
+title('Step to 800')
+
+
+sys_d = c2d(motor_r_model, 0.002);
+[C_pi,info] = pidtune(sys_d,'PID', 750.0)
+T_pi = feedback(C_pi*sys_d, 1);
+%step(T_pi, 80)
+
+t = 0:0.002:0.3;           % time vector
+u = 800 * ones(size(t)); % step input of magnitude 80
+[y, t_out] = lsim(T_pi, u, t);
+
+
+plot(t_out, y, 'LineWidth', 1.5)
