@@ -83,7 +83,7 @@ void readAccelerometer(SPI_HandleTypeDef *hspi){
 	accAngle = atan(accValues[0]/accValues[2])*180/M_PI;
 
 	// moving average
-	angle = movingAverage();
+	angle = filterAngleMovingAverage();
 
 	if(fabs(angle) > 90.0f){
 		angle = previousAngle;
@@ -91,7 +91,7 @@ void readAccelerometer(SPI_HandleTypeDef *hspi){
 }
 
 // for filtration (or not)
-float movingAverage(){
+float filterAngleMovingAverage(){
 	float angle = 0.0f;
 	for(int i = 0; i< simpleNum; i++){
 	  simpleAvgAngle[i] = simpleAvgAngle[i+1];

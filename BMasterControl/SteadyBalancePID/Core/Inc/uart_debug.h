@@ -17,9 +17,15 @@
 
 
 void pcTransmitTime(UART_HandleTypeDef *uart5);
+
 void pcTransmitAngles(UART_HandleTypeDef *uart5);
+
 void pcTransmitEncoders(UART_HandleTypeDef *uart5);
+void pcTransmitEncodersPositions(UART_HandleTypeDef *uart5);
+void pcTransmitEncodersSpeeds(UART_HandleTypeDef *uart5);
+
 void pcTransmitControll(UART_HandleTypeDef *uart5);
+
 void pcTransmitAcc(UART_HandleTypeDef *uart5);
 
 // and more eventually

@@ -45,7 +45,7 @@ void AccelInit(SPI_HandleTypeDef *hspi);
 
 
 void readAccelerometer(SPI_HandleTypeDef *hspi);
-float movingAverage();
+float filterAngleMovingAverage();
 
 
 

@@ -10,23 +10,31 @@
 
 #include "stm32f4xx_hal.h"
 
-extern int16_t encoderL;
-extern int16_t encoderR;
+#define impConst 0.08844 // mm/impulse
 
-extern int16_t encoderLOld;
-extern int16_t encoderROld;
-extern int16_t encoderLSpeed;
-extern int16_t encoderRSpeed;
+extern uint16_t encoderL;
+extern uint16_t encoderR;
 
+extern uint16_t encoderLOld;
+extern uint16_t encoderROld;
+extern float encoderLSpeed;
+extern float encoderRSpeed;
+
+extern float encoderLvalues[10];
+extern float encoderRvalues[10];
+extern float lSum, rSum, lSpeed, rSpeed;
 
 extern float encoderTd;
 
 //debug values
-extern int16_t encoderLSpeedMax;
-extern int16_t encoderRSpeedMax;
-extern int16_t encoderLSpeedMin;
-extern int16_t encoderRSpeedMin;
+//extern int16_t encoderLSpeedMax;
+//extern int16_t encoderRSpeedMax;
+//extern int16_t encoderLSpeedMin;
+//extern int16_t encoderRSpeedMin;
 
 
 void getEncoders(TIM_HandleTypeDef *T2, TIM_HandleTypeDef *T3);
+void filterEncodersMovingAverage();
+
+
 #endif /* INC_ENCODERS_H_ */

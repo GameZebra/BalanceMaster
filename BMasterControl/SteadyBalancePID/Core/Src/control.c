@@ -7,78 +7,125 @@
 
 #include "control.h"
 
+
+
+
+
 // PID constants
-float Kp =  3.0f;
-float Ki =  0.0f;
-float Kd = 2.0f;
+// 0 for the fastest pid; 1 fpr  the middle; 2 for slowest
+
+// fastest pid
+float Kp0 = 0.389, Ki0 = 24.5, Kd0 = 0.000423;
+
+// middle pid
+float Kp1 =  3.0f;
+float Ki1 =  0.0f;
+float Kd1 = 2.0f;
+
+//slowest pid
+float Kp2 = 0.0, Ki2 = 0.0, Kd2 = 0.0;
 
 
 // target
-float setpoint = -0.5;
-float setPointDelta = 0.00;
-uint8_t isReady = 1;
-float leftSetup[100];
-float minD = 100;
-float minDAngle[5] = {0, 0, 0, 0, 0};
-int8_t sign = 1;
-int8_t signOld = 1;
-uint8_t signChanges = 0;
-uint8_t moved = 0;
-// State variables
-float error = 0.0f;
-float previous_error = 0.0f;
-float integral = 0.0f;
-float derivative = 0.0f;
-float output = 0.0f;
-float outputOld = 0.0f;
-uint8_t dirChange = 0;
+float targetAngle = -0.5;
+//float setPointDelta = 0.00;
+//uint8_t isReady = 1;
+//float leftSetup[100];
+//float minD = 100;
+//float minDAngle[5] = {0, 0, 0, 0, 0};
+//int8_t sign = 1;
+//int8_t signOld = 1;
+//uint8_t signChanges = 0;
+//uint8_t moved = 0;
 
-// debug
-float dMAX = 0;
-float lineFixed = 8;
-float lineSpeed = 0.3;
+// State variables
+// fast pid
+float integralL = 0, integralR = 0, previousLSpeed= 0, previousRSpeed=0;
+int8_t leftCtrl = 0, rightCtrl = 0;
+
+// middle pid
+//float error = 0.0f;
+float previousFilteredAngle = 0.0f;
+float integralAngle = 0.0f;
+//float derivative = 0.0f;
+float controlSpeed = 0.0f;
+//float outputOld = 0.0f;
+//uint8_t dirChange = 0;
+
+// slow pid
+
+
+
+// other control variables
+
 
 // Sample time
-float dt = 0.001f;  // 1 ms
+float angleTd = 0.010f;  // 10 ms
+
+
+// debug
+//float dMAX = 0;
+//float lineFixed = 8;
+//float lineSpeed = 0.3;
 
 
 
-void calculateSpeed(){
-	error = setpoint - angle;
-	integral += error * dt;
-	Kp = (int)(lineSpeed*fabs(error))+lineFixed;
-	derivative = (gyroAngle - previousAngle) / dt;
-	if(derivative>127.0/Kd){
-		derivative = 127;
-	}
-	output = Kp * error + Ki * integral + Kd * derivative;
-	previous_error = error;
-	previousAngle = gyroAngle;
 
-	if (error<-0.005){
+float calculateSpeed(float setpointAngle, float measuredAngle, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt){ // ma not need rotation
+	controlSpeed = PID(setpointAngle, measuredAngle, Kp, Ki, Kd, integral, previousMeasurment, dt);
+	return controlSpeed;
+}
+
+
+int8_t PID(float setpoint, float measured, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt){
+	float error = setpoint - measured;
+	*integral += error * dt;
+	float derivative = (measured - *previousMeasurment)/dt;
+	float control = Kp * error + Ki * *integral + Kd * derivative;
+	*previousMeasurment = measured;
+
+	return (int8_t)control;
+}
+
+uint8_t direction(float *speed, float histeresis){
+	uint8_t rotation = 0;
+	if (*speed< -histeresis){
 		rotation = 2;
 	}
-	else if (error>0.005){
+	else if (*speed> histeresis){
 		rotation = 0;
 	}
 	else{
-		rotation = 1;
+		*speed = 0;
 	}
+	return rotation;
+}
 
-
-	if (output<-127){
-		output = -127;
+void controlLimit(int8_t *control){
+	if (*control<-127){
+		*control = -127;
 	}
-	else if (output>127){
-		output = 127;
-	}
-	speed = abs((int)output);
-
-	if (dMAX < derivative){
-		dMAX = derivative;
+	else if (*control>127){
+		*control = 127;
 	}
 }
 
+void generalLimit(float *control, float limit){
+	if (*control<-limit){
+		*control = -limit;
+	}
+	else if (*control>limit){
+		*control = limit;
+	}
+}
+
+int8_t motorControl(float setpoint, float measured, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt, uint8_t *rotation){
+	int8_t control = PID(setpoint, measured, Kp, Ki, Kd, integral, previousMeasurment, dt);
+	*rotation = direction(&control, 0);
+	controlLimit(&control);
+	control = abs(control);
+	return (int8_t)control;
+}
 
 
 // target update eventually
