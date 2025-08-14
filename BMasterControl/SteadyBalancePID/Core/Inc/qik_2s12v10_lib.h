@@ -75,7 +75,7 @@ extern uint8_t const motor0[3];	// the right motor (when watching the back side)
 extern uint8_t const motor1[3]; // the left  motor
 //extern uint8_t rotation;
 //extern uint8_t rotationOld;
-extern int8_t speed;
+extern float speed;
 extern int8_t brake;
 extern uint8_t dirL, dirR;
 

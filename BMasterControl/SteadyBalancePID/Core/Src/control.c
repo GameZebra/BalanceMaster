@@ -77,14 +77,14 @@ float calculateSpeed(float setpointAngle, float measuredAngle, float Kp, float K
 }
 
 
-int8_t PID(float setpoint, float measured, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt){
+float PID(float setpoint, float measured, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt){
 	float error = setpoint - measured;
 	*integral += error * dt;
 	float derivative = (measured - *previousMeasurment)/dt;
 	float control = Kp * error + Ki * *integral + Kd * derivative;
 	*previousMeasurment = measured;
 
-	return (int8_t)control;
+	return control;
 }
 
 uint8_t direction(float *speed, float histeresis){
@@ -101,7 +101,7 @@ uint8_t direction(float *speed, float histeresis){
 	return rotation;
 }
 
-void controlLimit(int8_t *control){
+void controlLimit(float *control){
 	if (*control<-127){
 		*control = -127;
 	}
@@ -119,11 +119,11 @@ void generalLimit(float *control, float limit){
 	}
 }
 
-int8_t motorControl(float setpoint, float measured, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt, uint8_t *rotation){
-	int8_t control = PID(setpoint, measured, Kp, Ki, Kd, integral, previousMeasurment, dt);
+int8_t motorControl(float setSpeed, float measuredSpeed, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt, uint8_t *rotation){
+	float control = PID(setSpeed, measuredSpeed, Kp, Ki, Kd, integral, previousMeasurment, dt);
 	*rotation = direction(&control, 0);
 	controlLimit(&control);
-	control = abs(control);
+	control = fabs(control);
 	return (int8_t)control;
 }
 

@@ -62,9 +62,9 @@ extern float angleTd;  // 1 ms
 
 
 float calculateSpeed(float setpointAngle, float measuredAngle, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt);
-int8_t PID(float setpoint, float measured, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt);
+float PID(float setpoint, float measured, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt);
 uint8_t direction(float *speed, float histeresis);
-void controlLimit(int8_t *control);
+void controlLimit(float *control);
 void generalLimit(float *control, float limit);
 int8_t motorControl(float setpoint, float measured, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt, uint8_t *rotation);
 

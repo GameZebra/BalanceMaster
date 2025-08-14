@@ -137,15 +137,18 @@ int main(void)
   HAL_TIM_Base_Start(&htim8);
   HAL_ADC_Start_IT(&hadc1);
 
-  __HAL_TIM_SET_COMPARE(&htim10,TIM_CHANNEL_1, 10);
-  HAL_TIM_Base_Start_IT(&htim10);
-
+//  __HAL_TIM_SET_COMPARE(&htim10,TIM_CHANNEL_1, 10); // questionable?
 
   HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_1);
   HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_2);
 
   HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_1);
   HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_2);
+
+  HAL_TIM_Base_Start_IT(&htim10);
+  HAL_TIM_Base_Start_IT(&htim14);
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -329,7 +332,7 @@ static void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 0;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 4294967295;
+  htim2.Init.Period = 65535;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
@@ -515,7 +518,7 @@ static void MX_TIM10_Init(void)
   htim10.Instance = TIM10;
   htim10.Init.Prescaler = 42;
   htim10.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim10.Init.Period = 1000;
+  htim10.Init.Period = 10000;
   htim10.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim10.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim10) != HAL_OK)
@@ -706,7 +709,6 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET);
@@ -732,12 +734,23 @@ static void MX_GPIO_Init(void)
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-   if (htim == &htim10){
-	   readAccelerometer(&hspi1);
-	   getEncoders(&htim2, &htim3);
-//	   calculateSpeed();
-	   pcTransmitBin(&huart5);
-	   moveMotors(&huart2, &htim5, speed);
+	if (htim->Instance == TIM14){
+		  getEncoders(&htim2, &htim3);
+		  filterEncodersMovingAverage();
+
+		  rightCtrl = motorControl(speed, rSpeed, Kp0, Ki0, Kd0, &integralR, &previousRSpeed, encoderTd, &dirR);
+		  leftCtrl = motorControl(speed, -lSpeed, Kp0, Ki0, Kd0, &integralL, &previousLSpeed, encoderTd, &dirL);
+
+		  RightMotorSpeed(&huart2, &rightCtrl, dirR);
+		  LeftMotorSpeed(&huart2, &leftCtrl, dirL);
+
+	}
+	if (htim == &htim10){
+//	   readAccelerometer(&hspi1);
+//	   getEncoders(&htim2, &htim3);
+////	   calculateSpeed();
+//	   pcTransmitBin(&huart5);
+//	   moveMotors(&huart2, &htim5, speed);
    }
 }
 

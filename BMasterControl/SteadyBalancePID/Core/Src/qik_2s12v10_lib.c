@@ -12,7 +12,7 @@ uint8_t const motor0[3] = {m0Forward, m0Brake, m0Reverse};	// the right motor (w
 uint8_t const motor1[3] = {m1Reverese, m1Brake, m1Forward}; // the left motor
 //uint8_t rotation = 0;
 //uint8_t rotationOld = 0;
-int8_t speed = 0;
+float speed = 0;
 int8_t brake = 127;
 uint8_t dirL = 0, dirR = 0;
 
