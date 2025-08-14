@@ -9,23 +9,28 @@
 
 uint16_t gyroValue = 0;
 float angularVelocity = 0;
+float previousAngularVelocity = 0;
 float measuredVoltage = 0;
 float gyroAngle = 0;
 float previousGyroAngle = 0;
-float gyroTd = 0.001;
-float gyroAVelocityBase = 1.476;
+float gyroTd = 0.01;
+float gyroAVelocityBase = 1.395;
 float gyroConstant = 0.00702176;
 // debug
 float maxDiviat = 0;
 
 
 void calculateGyroAngle(){
-	measuredVoltage = (gyroValue / 4095.0)*2.9;
+	measuredVoltage = (gyroValue / 4095.0)*2.89;
 	angularVelocity = (measuredVoltage - gyroAVelocityBase)/gyroConstant; // [degrees/ time]
 	if (fabs(angularVelocity) > 1.2){
 		gyroAngle -= angularVelocity * gyroTd; // 1/1000 s
 		// - because the positive and negative sides of the Acc and Gyro are different
 	}
+	else {
+		angularVelocity = 0;
+	}
+	previousAngularVelocity = angularVelocity;
 	if(fabs(angularVelocity) > maxDiviat){
 		maxDiviat = fabs(angularVelocity);
 	}

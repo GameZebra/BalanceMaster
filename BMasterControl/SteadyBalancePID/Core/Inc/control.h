@@ -61,7 +61,8 @@ extern float angleTd;  // 1 ms
 //extern float lineSpeed;
 
 
-float calculateSpeed(float setpointAngle, float measuredAngle, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt);
+float calculateSpeed(float setpointAngle, float measuredAngle, float measuredAVelocity, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt);
+float PID2(float setpoint, float measuredAngle, float measuredAVelocity, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt);
 float PID(float setpoint, float measured, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt);
 uint8_t direction(float *speed, float histeresis);
 void controlLimit(float *control);

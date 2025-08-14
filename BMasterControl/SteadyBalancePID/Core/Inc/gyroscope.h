@@ -16,6 +16,7 @@
 // Gyro
 extern uint16_t gyroValue;
 extern float angularVelocity;
+extern float previousAngularVelocity;
 extern float measuredVoltage;
 extern float gyroAngle;
 extern float previousGyroAngle;

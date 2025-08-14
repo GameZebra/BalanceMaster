@@ -18,9 +18,9 @@
 float Kp0 = 0.389, Ki0 = 24.5, Kd0 = 0.000423;
 
 // middle pid
-float Kp1 =  3.0f;
+float Kp1 =  18.0f;
 float Ki1 =  0.0f;
-float Kd1 = 2.0f;
+float Kd1 = 0.1f;
 
 //slowest pid
 float Kp2 = 0.0, Ki2 = 0.0, Kd2 = 0.0;
@@ -71,9 +71,20 @@ float angleTd = 0.010f;  // 10 ms
 
 
 
-float calculateSpeed(float setpointAngle, float measuredAngle, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt){ // ma not need rotation
-	controlSpeed = PID(setpointAngle, measuredAngle, Kp, Ki, Kd, integral, previousMeasurment, dt);
+float calculateSpeed(float setpointAngle, float measuredAngle, float measuredAVelocity, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt){ // ma not need rotation
+	controlSpeed = PID2(setpointAngle, measuredAngle, measuredAVelocity, Kp, Ki, Kd, integral, previousMeasurment, dt);
 	return controlSpeed;
+}
+
+
+float PID2(float setpoint, float measuredAngle, float measuredAVelocity, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt){
+	float error = setpoint - measuredAngle;
+	*integral += error * dt;
+	float derivative = measuredAVelocity;
+	float control = Kp * error + Ki * *integral + Kd * derivative;
+	*previousMeasurment = measuredAngle;
+
+	return control;
 }
 
 

@@ -475,7 +475,7 @@ static void MX_TIM8_Init(void)
   htim8.Instance = TIM8;
   htim8.Init.Prescaler = 42;
   htim8.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim8.Init.Period = 1000;
+  htim8.Init.Period = 10000;
   htim8.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim8.Init.RepetitionCounter = 0;
   htim8.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -488,7 +488,7 @@ static void MX_TIM8_Init(void)
   {
     Error_Handler();
   }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim8, &sMasterConfig) != HAL_OK)
   {
@@ -746,14 +746,24 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 	}
 	if (htim == &htim10){
-//	   readAccelerometer(&hspi1);
-//	   getEncoders(&htim2, &htim3);
-////	   calculateSpeed();
-//	   pcTransmitBin(&huart5);
-//	   moveMotors(&huart2, &htim5, speed);
+	   readAccelerometer(&hspi1);
+
+	   speed = calculateSpeed(targetAngle, angle, angularVelocity, Kp1, Ki1, Kd1, &integralAngle, &previousFilteredAngle, angleTd);
    }
 }
 
+
+//void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
+//{
+//  /* Prevent unused argument(s) compilation warning */
+//  UNUSED(hadc);
+//  /* NOTE : This function Should not be modified, when the callback is needed,
+//            the HAL_ADC_ConvCpltCallback could be implemented in the user file
+//   */
+//  gyroValue = HAL_ADC_GetValue(hadc);
+//  calculateGyroAngle();
+//
+//}
 
 /* USER CODE END 4 */
 
