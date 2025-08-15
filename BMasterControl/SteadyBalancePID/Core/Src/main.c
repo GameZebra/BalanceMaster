@@ -27,6 +27,7 @@
 #include "encoders.h"
 #include "control.h"
 #include "uart_debug.h"
+#include "filters.h"
 
 /* USER CODE END Includes */
 
@@ -151,6 +152,8 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim14);
 
   calculateGyroAVelocityBase(10);
+  IIR3_Init(&lFilter, b, a);
+  IIR3_Init(&rFilter, b, a);
 
   /* USER CODE END 2 */
 
@@ -743,7 +746,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		  HAL_TIM_Base_Start(&htim11);
 
 		  getEncoders(&htim2, &htim3);
-		  filterEncodersMovingAverage();
+//		  filterEncodersMovingAverage();
+		  lSpeed = IIR3_Process(&lFilter, encoderLSpeed);
+		  rSpeed = IIR3_Process(&rFilter, encoderRSpeed);
+
 
 		  rightCtrl = motorControl(speed, rSpeed, Kp0, Ki0, Kd0, &integralR, &previousRSpeed, encoderTd, &dirR);
 		  leftCtrl = motorControl(speed, -lSpeed, Kp0, Ki0, Kd0, &integralL, &previousLSpeed, encoderTd, &dirL);
@@ -751,7 +757,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		  RightMotorSpeed(&huart2, &rightCtrl, dirR);
 		  LeftMotorSpeed(&huart2, &leftCtrl, dirL);
 
-//		  HAL_UART_Transmit(&huart5, &encoderLSpeed, 4, 1);
+		  HAL_UART_Transmit(&huart5, &rSpeed, 4, 1);
 		  HAL_UART_Transmit(&huart5, &encoderRSpeed, 4, 1);
 		  HAL_UART_Transmit(&huart5, &speed, 4, 1);
 

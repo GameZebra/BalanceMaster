@@ -9,6 +9,7 @@
 #define INC_ENCODERS_H_
 
 #include "stm32f4xx_hal.h"
+#include "filters.h"
 
 #define impConst 0.08844 // mm/impulse
 
@@ -25,6 +26,11 @@ extern float encoderRvalues[10];
 extern float lSum, rSum, lSpeed, rSpeed;
 
 extern float encoderTd;
+
+// filter
+extern float b[4];
+extern float a[4];
+extern IIR3_Filter lFilter, rFilter;
 
 //debug values
 //extern int16_t encoderLSpeedMax;
