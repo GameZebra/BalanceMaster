@@ -262,10 +262,31 @@ pid values (Kp = 0.389; Ki =24.5 Kd =0.000423)
     - 📊 target 1000 mm/s 
         - overshot %
         - settle time 0.202 s
+- 🧠 even thou the time response is slow (200 ms), it is mostly because of overshoot and oscilations
+and i think that these oscilations will be a lot smaller with more graduate change of the setpoint
+
+## 📅 July 14, 2025
+- 💻 fixed the libraries
+    - 💻 moved everything tested in the past couple of days
+- 💻 made the speed regulator work in the combined file
+- 💻 made the balance regulator
+    - 💻 it is currenty badly tuned
+- 🧠 There is some misterious 8.193 ms constant delay for everything that is not with the higest priority interup?
+- 📊 the speed regulator needs 425 us (in the big file with highest interupt priority)
+- 📊 the andgle regulator needs 403 us (when with highest priority)
+- 🧠 so far when both timers are with priority 0 both measure time in the us 
+- 📊 gyro function 25 us (when priority 1)
 
 
 
 ### For tomorow
+- remove the if gyro filtration
+- make a starting gyro function, that zeros the still position velocity
+- record raw data for the accelerometer and the gyroscope
+- implement iir filter
+- think of a formula for dynamic PID values
+    - find good values for low error and slightly larger
+    - make linear interpolation between these points
 - make cascade pid control
 - make 1d calman
 
