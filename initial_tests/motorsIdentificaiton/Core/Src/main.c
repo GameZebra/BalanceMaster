@@ -55,10 +55,10 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 uint8_t dirL = 0, dirR = 0;
-float encoderLvalues[10];
-float encoderRvalues[10];
-float temp, lSum=0, rSum=0, lSpeed, rSpeed;
-float integralL = 0, integralR = 0, previousLSpeed= 0, previousRSpeed=0;
+//float encoderLvalues[10];
+//float encoderRvalues[10];
+//float temp, lSum=0, rSum=0, lSpeed, rSpeed;
+//float integralL = 0, integralR = 0, previousLSpeed= 0, previousRSpeed=0;
 int8_t leftCtrl = 0, rightCtrl = 0;
 float fLCtrl = 0.0, fRCtrl = 0.0;
 uint8_t Sspeed = 0;
@@ -133,6 +133,9 @@ int main(void)
 
   HAL_TIM_Base_Start_IT(&htim14);
   HAL_TIM_Base_Start_IT(&htim13);
+
+  IIR3_Init(&lFilter, b, a);
+  IIR3_Init(&rFilter, b, a);
 
   /* USER CODE END 2 */
 
@@ -538,22 +541,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	  // i must have speed variable
 	  getEncoders(&htim2, &htim3);
 
-	  // moving average needed (for low speeds)
-	  lSum = 0;
-	  rSum = 0;
-	  for(uint8_t i =9; i>0; i--){
-		  encoderLvalues[i]=encoderLvalues[i-1];
-		  lSum += encoderLvalues[i];
-		  encoderRvalues[i]=encoderRvalues[i-1];
-		  rSum += encoderRvalues[i];
-	  }
-	  encoderRvalues[0] = encoderRSpeed;
-	  encoderLvalues[0] = encoderLSpeed;
-	  lSum += encoderLSpeed;
-	  rSum += encoderRSpeed;
-	  lSpeed = lSum / 10.0;
-	  rSpeed = rSum / 10.0;
+	  lSpeed = IIR3_Process(&lFilter, encoderLSpeed);
+	  rSpeed = IIR3_Process(&rFilter, encoderRSpeed);
 
+	  // moving average needed (for low speeds)
 
 	  // PID that eliminates the steady state error
 	  rightCtrl = Sspeed;

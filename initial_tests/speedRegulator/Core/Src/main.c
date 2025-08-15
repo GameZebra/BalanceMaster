@@ -59,7 +59,7 @@ float encoderRvalues[10];
 float temp, lSum=0, rSum=0, lSpeed, rSpeed;
 float integralL = 0, integralR = 0, previousLSpeed= 0, previousRSpeed=0;
 int8_t leftCtrl = 0, rightCtrl = 0;
-float kp = 0.389,ki=24.5,kd=0.000423;
+float kp = 0.389, ki=24.5, kd=0.000423;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
