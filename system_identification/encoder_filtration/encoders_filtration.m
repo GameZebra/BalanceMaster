@@ -112,7 +112,7 @@ plot(time, butterworthSpeed1, 'c--', 'LineWidth', 1)
 
 %% IIR Butterworth Low-Pass Filter
 Fs = 1/0.002;;          % Sampling frequency (Hz)
-Fc = 6;           % Cutoff frequency (Hz)
+Fc = 15;           % Cutoff frequency (Hz)
 N  = 3;             % Filter order
 
 Wn = Fc / (Fs/2);   % Normalized cutoff frequency
