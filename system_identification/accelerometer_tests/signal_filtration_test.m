@@ -1,4 +1,4 @@
-cd clear all;
+clear all;
 close all;
 
 %% Test signal
