@@ -64,6 +64,8 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
+volatile uint16_t cnt1, cnt2, cnt3;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -148,6 +150,7 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim10);
   HAL_TIM_Base_Start_IT(&htim14);
 
+  calculateGyroAVelocityBase(10);
 
   /* USER CODE END 2 */
 
@@ -547,7 +550,7 @@ static void MX_TIM11_Init(void)
 
   /* USER CODE END TIM11_Init 1 */
   htim11.Instance = TIM11;
-  htim11.Init.Prescaler = 0;
+  htim11.Init.Prescaler = 42;
   htim11.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim11.Init.Period = 65535;
   htim11.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -735,6 +738,10 @@ static void MX_GPIO_Init(void)
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if (htim->Instance == TIM14){
+
+		  __HAL_TIM_SET_COUNTER(&htim11, 0);
+		  HAL_TIM_Base_Start(&htim11);
+
 		  getEncoders(&htim2, &htim3);
 		  filterEncodersMovingAverage();
 
@@ -744,26 +751,49 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		  RightMotorSpeed(&huart2, &rightCtrl, dirR);
 		  LeftMotorSpeed(&huart2, &leftCtrl, dirL);
 
-	}
-	if (htim == &htim10){
-	   readAccelerometer(&hspi1);
+//		  HAL_UART_Transmit(&huart5, &encoderLSpeed, 4, 1);
+		  HAL_UART_Transmit(&huart5, &encoderRSpeed, 4, 1);
+		  HAL_UART_Transmit(&huart5, &speed, 4, 1);
 
-	   speed = calculateSpeed(targetAngle, angle, angularVelocity, Kp1, Ki1, Kd1, &integralAngle, &previousFilteredAngle, angleTd);
-   }
+
+		  HAL_TIM_Base_Stop(&htim11);
+		  cnt1 = __HAL_TIM_GET_COUNTER(&htim11);
+
+	}
+	if (htim->Instance == TIM10){
+		__HAL_TIM_SET_COUNTER(&htim11, 0);
+		 HAL_TIM_Base_Start(&htim11);
+
+	  readAccelerometer(&hspi1);
+//	  speed = calculateSpeed(targetAngle, angle, angularVelocity, Kp1, Ki1, Kd1, &integralAngle, &previousFilteredAngle, angleTd);
+
+//	  HAL_UART_Transmit(&huart5, &accAngle, 4, 1);
+//	  HAL_UART_Transmit(&huart5, &angularVelocity, 4, 1);
+
+	  HAL_TIM_Base_Stop(&htim11);
+	  cnt2 = __HAL_TIM_GET_COUNTER(&htim11);
+	}
+}
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
+{
+  /* Prevent unused argument(s) compilation warning */
+  UNUSED(hadc);
+  /* NOTE : This function Should not be modified, when the callback is needed,
+            the HAL_ADC_ConvCpltCallback could be implemented in the user file
+   */
+  __HAL_TIM_SET_COUNTER(&htim11, 0);
+  HAL_TIM_Base_Start(&htim11);
+
+  gyroValue = HAL_ADC_GetValue(hadc);
+  calculateGyroAngle();
+
+  HAL_TIM_Base_Stop(&htim11);
+  cnt3 = __HAL_TIM_GET_COUNTER(&htim11);
+
 }
 
 
-//void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
-//{
-//  /* Prevent unused argument(s) compilation warning */
-//  UNUSED(hadc);
-//  /* NOTE : This function Should not be modified, when the callback is needed,
-//            the HAL_ADC_ConvCpltCallback could be implemented in the user file
-//   */
-//  gyroValue = HAL_ADC_GetValue(hadc);
-//  calculateGyroAngle();
-//
-//}
 
 /* USER CODE END 4 */
 

@@ -29,6 +29,9 @@ extern float maxDiviat;
 
 
 void calculateGyroAngle(); // before using there should be ADC reading of the sensor
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc);
+void calculateGyroAVelocityBase(uint8_t averageOrder);
+
+//void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc);
+
 
 #endif /* GYROSCOPE_H_ */
