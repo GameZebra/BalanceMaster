@@ -277,13 +277,13 @@ and i think that these oscilations will be a lot smaller with more graduate chan
 - 🧠 so far when both timers are with priority 0 both measure time in the us 
 - 📊 gyro function 25 us (when priority 1)
 
-
-
-### For tomorow
+## 📅 July 15, 2025
 - remove the if gyro filtration
 - make a starting gyro function, that zeros the still position velocity
 - record raw data for the accelerometer and the gyroscope
 - implement iir filter
+
+### For tomorow
 - think of a formula for dynamic PID values
     - find good values for low error and slightly larger
     - make linear interpolation between these points
