@@ -278,20 +278,30 @@ and i think that these oscilations will be a lot smaller with more graduate chan
 - 📊 gyro function 25 us (when priority 1)
 
 ## 📅 July 15, 2025
-- remove the if gyro filtration
-- make a starting gyro function, that zeros the still position velocity
-- record raw data for the accelerometer and the gyroscope
-- implement iir filter
+- 💻 remove the if gyro filtration
+- 💻 make a starting gyro function, that zeros the still position velocity
+- 📊 record raw data for the accelerometer and the gyroscope
+- 💻 implement iir filter (3rd order)
+    - 🧠 the controll became unstable
+
+## 📅 July 16, 2025
+- 🧠 filtration in real time for controling real time systems is not as trivial as filtering data offline and judje the performance of the filter visually by the error from the real value. Filters introduce phase shift whitch can make the plant unstable
+whitch happend yesterday 🙂. To prevent that you need to use 3-5 times faster filter than the controll loop bandwith. And then it works
+- 💻 i fixed the filters phase shifts 
+- 🧠 and after all this the best filter i made was arguably worst than an 10th order moving average ...
+- 💻 implemented anti windup in the pid algorytm
+
+- 🧠 do i need speed regulator at the bottom?
 
 ### For tomorow
-- think of a formula for dynamic PID values
-    - find good values for low error and slightly larger
-    - make linear interpolation between these points
+- digital filtration for the gyroscope
+- filtration for the accelerometer
 - make cascade pid control
 - make 1d calman
 
 ## TODO
-- digital filtration for the derivative
-- use the gyro for the derivative
-- the angle correction i think should be based on the movement of the robot and not exactly on the way it wants to move
+- try increasing the Kd to limit the oscilations of the speed regulator
+- think of a formula for dynamic PID values
+    - find good values for low error and slightly larger
+    - make linear interpolation between these points
 
