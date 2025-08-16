@@ -44,5 +44,17 @@ float IIR3_Process(IIR3_Filter *f, float input)
     return output;
 }
 
+float movingAverage(float *values, float newValue, uint8_t order){
+	float result = 0;
+	float sum = 0;
+	  for(uint8_t i =order; i>0; i--){
+		  values[i]=values[i-1];
+		  sum += values[i];
+	  }
+	  values[0] = newValue;
+	  sum += newValue;
+	  result = sum / (float)order;
+	  return result;
+}
 
 

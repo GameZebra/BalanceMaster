@@ -21,11 +21,14 @@ float lSum=0, rSum=0, lSpeed=0, rSpeed=0;
 
 float encoderTd = 0.002;
 
-// filter
-float b[4] = {0.0007, 0.0021, 0.0021, 0.0007};
-float a[4] = {1.0, -2.6236, 2.3147, -0.6855};
+// fir filter
+float b[4] = {0.1929, 0.5788, 0.5788, 0.1929};
+float a[4] = {1.0000, 0.1843, 0.3423, 0.0169};
 IIR3_Filter lFilter, rFilter;
 
+// moving Average
+float MAValuesL[EncoderMovAvgOrder] = {0, 0, 0, 0, 0};
+float MAValuesR[EncoderMovAvgOrder] = {0, 0, 0, 0, 0};
 
 // debug
 //int16_t encoderLSpeedMax = 0;

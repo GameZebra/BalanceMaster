@@ -748,17 +748,20 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		  getEncoders(&htim2, &htim3);
 //		  filterEncodersMovingAverage();
 		  lSpeed = IIR3_Process(&lFilter, encoderLSpeed);
+		  lSpeed = movingAverage(MAValuesL, lSpeed, EncoderMovAvgOrder-1);
 		  rSpeed = IIR3_Process(&rFilter, encoderRSpeed);
+		  rSpeed = movingAverage(MAValuesR, rSpeed, EncoderMovAvgOrder-1);
 
 
 		  rightCtrl = motorControl(speed, rSpeed, Kp0, Ki0, Kd0, &integralR, &previousRSpeed, encoderTd, &dirR);
 		  leftCtrl = motorControl(speed, -lSpeed, Kp0, Ki0, Kd0, &integralL, &previousLSpeed, encoderTd, &dirL);
+		  float fRCtrl = (float)rightCtrl;
 
 		  RightMotorSpeed(&huart2, &rightCtrl, dirR);
 		  LeftMotorSpeed(&huart2, &leftCtrl, dirL);
 
 		  HAL_UART_Transmit(&huart5, &rSpeed, 4, 1);
-		  HAL_UART_Transmit(&huart5, &encoderRSpeed, 4, 1);
+		  HAL_UART_Transmit(&huart5, &fRCtrl, 4, 1);
 		  HAL_UART_Transmit(&huart5, &speed, 4, 1);
 
 

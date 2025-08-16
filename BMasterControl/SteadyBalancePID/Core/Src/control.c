@@ -15,7 +15,7 @@
 // 0 for the fastest pid; 1 fpr  the middle; 2 for slowest
 
 // fastest pid
-float Kp0 = 0.389, Ki0 = 24.5, Kd0 = 0.000423;
+float Kp0 = 0.65, Ki0 = 22.2, Kd0 = 0.000628;
 
 // middle pid
 float Kp1 =  18.0f;

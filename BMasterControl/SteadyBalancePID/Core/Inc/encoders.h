@@ -27,10 +27,16 @@ extern float lSum, rSum, lSpeed, rSpeed;
 
 extern float encoderTd;
 
-// filter
+// fir filter
 extern float b[4];
 extern float a[4];
 extern IIR3_Filter lFilter, rFilter;
+
+// moving Average
+#define EncoderMovAvgOrder 5
+extern float MAValuesL[EncoderMovAvgOrder];
+extern float MAValuesR[EncoderMovAvgOrder];
+
 
 //debug values
 //extern int16_t encoderLSpeedMax;
