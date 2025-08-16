@@ -541,8 +541,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	  // i must have speed variable
 	  getEncoders(&htim2, &htim3);
 
-	  lSpeed = IIR3_Process(&lFilter, encoderLSpeed);
-	  rSpeed = IIR3_Process(&rFilter, encoderRSpeed);
+//	  lSpeed = IIR3_Process(&lFilter, encoderLSpeed);
+//	  rSpeed = IIR3_Process(&rFilter, encoderRSpeed);
 
 	  // moving average needed (for low speeds)
 
@@ -561,8 +561,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	  // (2 PIDs actually)
 
 	  // print the results to the PC
-	  HAL_UART_Transmit(&huart5, &rSpeed, 4, 1);
-	  HAL_UART_Transmit(&huart5, &lSpeed, 4, 1);
+	  HAL_UART_Transmit(&huart5, &encoderRSpeed, 4, 1);
+	  HAL_UART_Transmit(&huart5, &encoderLSpeed, 4, 1);
 
 	  HAL_UART_Transmit(&huart5, &fRCtrl, 4, 1);
 	  HAL_UART_Transmit(&huart5, &fLCtrl, 4, 1);
@@ -572,8 +572,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   }
 
   if (htim->Instance == TIM13){
-	  //statSpeed();
-	  timeResponse();
+	  statSpeed();
+//	  timeResponse();
   }
 
 }
