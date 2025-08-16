@@ -746,11 +746,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		  HAL_TIM_Base_Start(&htim11);
 
 		  getEncoders(&htim2, &htim3);
-//		  filterEncodersMovingAverage();
-		  lSpeed = IIR3_Process(&lFilter, encoderLSpeed);
-		  lSpeed = movingAverage(MAValuesL, lSpeed, EncoderMovAvgOrder-1);
-		  rSpeed = IIR3_Process(&rFilter, encoderRSpeed);
-		  rSpeed = movingAverage(MAValuesR, rSpeed, EncoderMovAvgOrder-1);
+		  filterEncodersMovingAverage();
+//		  lSpeed = IIR3_Process(&lFilter, encoderLSpeed);
+//		  lSpeed = movingAverage(MAValuesL, lSpeed, EncoderMovAvgOrder-1);
+//		  rSpeed = IIR3_Process(&rFilter, encoderRSpeed);
+//		  rSpeed = movingAverage(MAValuesR, rSpeed, EncoderMovAvgOrder-1);
 
 
 		  rightCtrl = motorControl(speed, rSpeed, Kp0, Ki0, Kd0, &integralR, &previousRSpeed, encoderTd, &dirR);

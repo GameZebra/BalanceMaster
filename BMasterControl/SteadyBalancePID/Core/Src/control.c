@@ -133,7 +133,8 @@ void generalLimit(float *control, float limit){
 int8_t motorControl(float setSpeed, float measuredSpeed, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt, uint8_t *rotation){
 	float control = PID(setSpeed, measuredSpeed, Kp, Ki, Kd, integral, previousMeasurment, dt);
 	*rotation = direction(&control, 0);
-	controlLimit(&control);
+	controlLimit(&control);			// driver limits
+	generalLimit(integral, 127/Ki); // anti windup
 	control = fabs(control);
 	return (int8_t)control;
 }
