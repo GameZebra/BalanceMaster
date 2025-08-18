@@ -1,15 +1,25 @@
 clear
 
 % this data is after one filtration ...
-data = readmatrix("acc_data.csv");
+
+data = readmatrix("acc_velocity_stationary_1.csv");             % DFT here
+data1 = readmatrix("acc_velocity_normal_work_no_motors.csv");   % test for
+data2 = readmatrix("acc_velocity_normal_work_motors_on.csv");   % filters
+
 Td = 0.01;
 time = 0:Td:(length(data)-1)*Td;
-angle = data(:,2);
+angle = data(:,1);
+velocity = data(:,2)
 
 figure(1);
-plot(time, angle),grid on, hold on;
+plot(time, data),grid on, hold on;
 
-
+figure(2);
+time1 = 0:Td:(length(data1)-1)*Td;
+plot(data1),grid on, hold on;
+figure(3);
+time2 = 0:Td:(length(data2)-1)*Td;
+plot(data2),grid on, hold on;
 %% moving average
 
 windowSize = 13;
@@ -17,6 +27,8 @@ b = (1/windowSize)*ones(1,windowSize);
 a = 1;
 filtered_signal = filter(b, a, angle);
 
+figure(10)
+plot(time, angle, 'b-'), grid on, hold on;
 plot(time, filtered_signal, 'r', 'LineWidth', 2);
 
 
