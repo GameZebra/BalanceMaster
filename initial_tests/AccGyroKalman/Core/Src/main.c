@@ -124,6 +124,7 @@ int main(void)
 
   HAL_TIM_Base_Start_IT(&htim10);
   calculateGyroAVelocityBase(10);
+  KalmanInit();
 
 
   /* USER CODE END 2 */
@@ -465,6 +466,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		 HAL_TIM_Base_Start(&htim11);
 
 	  readAccelerometer(&hspi1);
+	  KalmanPredict();
+	  KalmanUpdate();
 	  //speed = calculateSpeed(targetAngle, angle, angularVelocity, Kp1, Ki1, Kd1, &integralAngle, &previousFilteredAngle, angleTd);
 
 	  HAL_UART_Transmit(&huart5, &accAngle, 4, 1);

@@ -1,4 +1,4 @@
-/*
+/*https://chatgpt.com/c/6861cf8e-fe10-8007-a8c0-86962881bd45
  * gyroscope.h
  *
  *  Created on: Jun 12, 2025
@@ -20,7 +20,7 @@ extern float previousAngularVelocity;
 extern float measuredVoltage;
 extern float gyroAngle;
 extern float previousGyroAngle;
-extern float gyroTd;
+#define gyroTd 0.01
 extern float gyroAVelocityBias;
 extern float gyroConstant;
 

@@ -8,12 +8,26 @@
 #include "KalmanFilter.h"
 
 float32_t X_data[STATE_SIZE] = {0, 0, 0};
-float32_t P_data[STATE_SIZE*STATE_SIZE] = { /* initial covariances */ };
-float32_t Q_data[STATE_SIZE*STATE_SIZE] = { /* process noise */ };
-float32_t R_data[MEAS_SIZE*MEAS_SIZE] = { /* measurement noise */ };
-float32_t H_data[MEAS_SIZE*STATE_SIZE] = {1, 0, 0}; // measuring angle only
+float32_t P_data[STATE_SIZE*STATE_SIZE] = {	1, 0, 0,	// covariance P initial guess
+											0, 1, 0,
+											0, 0, 1};
+// process noise Q
+float32_t Q_data[STATE_SIZE*STATE_SIZE] = {	0.15,		// q_theta
+											0.23,		// q_omega
+											0.000001};	// q_bias
+//measurement noise R
+float32_t R_data[MEAS_SIZE*MEAS_SIZE] = {	5,			//acc noise variance
+										 	1.44};		//gyro noise variance
 
-float32_t A_data[STATE_SIZE*STATE_SIZE] = { /* fill your A matrix */ };
+// measurments matrixes
+float32_t H_data[MEAS_SIZE*STATE_SIZE] = {	1, 0, 0,	//H_acc
+											0, 1, 1};	//H_gyro
+
+// state transition matrix A
+float32_t A_data[STATE_SIZE*STATE_SIZE] = {	1, gyroTd, 0,
+											0, 1, 0,
+											0, 0, 0};
+// a priori
 arm_matrix_instance_f32 X_pred;
 float32_t X_pred_data[STATE_SIZE];
 arm_matrix_instance_f32 AP, APAT;
@@ -22,6 +36,20 @@ float32_t AP_data[STATE_SIZE*STATE_SIZE], APAT_data[STATE_SIZE*STATE_SIZE];
 arm_matrix_instance_f32 AT;
 float32_t AT_data[STATE_SIZE*STATE_SIZE];
 
+
+// K = P*H' * inv(H*P*H' + R)
+arm_matrix_instance_f32 HT, HP, HPHT, HPHT_plus_R, HPHT_plus_R_inv;
+float32_t HT_data[STATE_SIZE*MEAS_SIZE], HP_data[STATE_SIZE*MEAS_SIZE];
+float32_t HPHT_data[MEAS_SIZE*MEAS_SIZE], HPHT_plus_R_data[MEAS_SIZE*MEAS_SIZE];
+float32_t HPHT_plus_R_inv_data[MEAS_SIZE*MEAS_SIZE];
+
+// X = X_pred + K*(z - H*X_pred)
+float32_t z_data[MEAS_SIZE] = {0, 0};
+arm_matrix_instance_f32 z;
+
+
+arm_matrix_instance_f32 HX, z_minus_HX, Kz;
+float32_t HX_data[MEAS_SIZE], z_minus_HX_data[MEAS_SIZE], Kz_data[STATE_SIZE];
 
 
 void KalmanInit(){
@@ -43,6 +71,16 @@ void KalmanInit(){
 	arm_mat_init_f32(&APAT, STATE_SIZE, STATE_SIZE, APAT_data);
 
 	arm_mat_init_f32(&AT, STATE_SIZE, STATE_SIZE, AT_data);
+
+	// K = P*H' * inv(H*P*H' + R)
+	arm_mat_init_f32(&HT, STATE_SIZE, MEAS_SIZE, HT_data);
+
+
+	arm_mat_init_f32(&z, MEAS_SIZE, 1, z_data);
+
+	arm_mat_init_f32(&HX, MEAS_SIZE, 1, HX_data);
+	arm_mat_init_f32(&z_minus_HX, MEAS_SIZE, 1, z_minus_HX_data);
+	arm_mat_init_f32(&Kz, STATE_SIZE, 1, Kz_data);
 
 
 }
@@ -69,12 +107,6 @@ void KalmanUpdate(){
 
 
 	// K = P*H' * inv(H*P*H' + R)
-	arm_matrix_instance_f32 HT, HP, HPHT, HPHT_plus_R, HPHT_plus_R_inv;
-	float32_t HT_data[STATE_SIZE*MEAS_SIZE], HP_data[STATE_SIZE*MEAS_SIZE];
-	float32_t HPHT_data[MEAS_SIZE*MEAS_SIZE], HPHT_plus_R_data[MEAS_SIZE*MEAS_SIZE];
-	float32_t HPHT_plus_R_inv_data[MEAS_SIZE*MEAS_SIZE];
-
-	arm_mat_init_f32(&HT, STATE_SIZE, MEAS_SIZE, HT_data);
 	arm_mat_trans_f32(&H, &HT);
 	arm_mat_mult_f32(&P, &HT, &HP);
 	arm_mat_mult_f32(&H, &HP, &HPHT);
@@ -87,15 +119,8 @@ void KalmanUpdate(){
 	arm_mat_mult_f32(&HP, &HPHT_plus_R_inv, &K);
 
 	// X = X_pred + K*(z - H*X_pred)
-	float32_t z_data[MEAS_SIZE] = {angle_measurement};
-	arm_matrix_instance_f32 z;
-	arm_mat_init_f32(&z, MEAS_SIZE, 1, z_data);
-
-	arm_matrix_instance_f32 HX, z_minus_HX, Kz;
-	float32_t HX_data[MEAS_SIZE], z_minus_HX_data[MEAS_SIZE], Kz_data[STATE_SIZE];
-	arm_mat_init_f32(&HX, MEAS_SIZE, 1, HX_data);
-	arm_mat_init_f32(&z_minus_HX, MEAS_SIZE, 1, z_minus_HX_data);
-	arm_mat_init_f32(&Kz, STATE_SIZE, 1, Kz_data);
+	z_data[0] = accAngle;
+	z_data[1] = angularVelocity;
 
 	arm_mat_mult_f32(&H, &X_pred, &HX);
 	arm_mat_sub_f32(&z, &HX, &z_minus_HX);

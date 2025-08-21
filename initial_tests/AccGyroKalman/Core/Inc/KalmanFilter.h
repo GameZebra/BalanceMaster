@@ -11,9 +11,12 @@
 #include "arm_math.h"   // CMSIS DSP core functions
 #include "matrix_functions.h" // Matrix functions
 
+#include "accelerometer.h"
+#include "gyroscope.h"
+
 
 #define STATE_SIZE 3
-#define MEAS_SIZE 1
+#define MEAS_SIZE 2
 
 extern arm_matrix_instance_f32 X;    // state vector [theta; omega; bias]
 extern arm_matrix_instance_f32 P;    // covariance
@@ -48,5 +51,10 @@ extern arm_matrix_instance_f32 z;
 
 extern arm_matrix_instance_f32 HX, z_minus_HX, Kz;
 extern float32_t HX_data[MEAS_SIZE], z_minus_HX_data[MEAS_SIZE], Kz_data[STATE_SIZE];
+
+
+void KalmanInit();
+void KalmanPredict();
+void KalmanUpdate();
 
 #endif /* INC_KALMANFILTER_H_ */
