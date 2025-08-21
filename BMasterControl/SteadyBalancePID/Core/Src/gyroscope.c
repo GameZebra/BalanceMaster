@@ -13,7 +13,7 @@ float previousAngularVelocity = 0;
 float measuredVoltage = 0;
 float gyroAngle = 0;
 float previousGyroAngle = 0;
-float gyroTd = 0.01;
+//float gyroTd = 0.01;
 float gyroAVelocityBase = 1.465;
 float gyroConstant = 0.00702176;
 // debug

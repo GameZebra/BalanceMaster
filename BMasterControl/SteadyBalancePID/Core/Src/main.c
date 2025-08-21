@@ -28,6 +28,7 @@
 #include "control.h"
 #include "uart_debug.h"
 #include "filters.h"
+#include "KalmanFilter.h"
 
 /* USER CODE END Includes */
 
@@ -136,6 +137,8 @@ int main(void)
   MX_TIM14_Init();
   /* USER CODE BEGIN 2 */
 
+  KalmanInit();
+
   AccelInit(&hspi1);
   HAL_TIM_Base_Start(&htim8);
   HAL_ADC_Start_IT(&hadc1);
@@ -152,8 +155,8 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim14);
 
   calculateGyroAVelocityBase(10);
-  IIR3_Init(&lFilter, b, a);
-  IIR3_Init(&rFilter, b, a);
+  //IIR3_Init(&lFilter, b, a);
+  //IIR3_Init(&rFilter, b, a);
 
   /* USER CODE END 2 */
 
@@ -760,9 +763,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		  RightMotorSpeed(&huart2, &rightCtrl, dirR);
 		  LeftMotorSpeed(&huart2, &leftCtrl, dirL);
 
-		  HAL_UART_Transmit(&huart5, &rSpeed, 4, 1);
-		  HAL_UART_Transmit(&huart5, &fRCtrl, 4, 1);
-		  HAL_UART_Transmit(&huart5, &speed, 4, 1);
+//		  HAL_UART_Transmit(&huart5, &rSpeed, 4, 1);
+//		  HAL_UART_Transmit(&huart5, &fRCtrl, 4, 1);
+//		  HAL_UART_Transmit(&huart5, &speed, 4, 1);
 
 
 		  HAL_TIM_Base_Stop(&htim11);
@@ -774,10 +777,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		 HAL_TIM_Base_Start(&htim11);
 
 	  readAccelerometer(&hspi1);
-//	  speed = calculateSpeed(targetAngle, angle, angularVelocity, Kp1, Ki1, Kd1, &integralAngle, &previousFilteredAngle, angleTd);
+	  KalmanPredict();
+	  KalmanUpdate();
+	  speed = calculateSpeed(targetAngle, X_data[0], X_data[1], Kp1, Ki1, Kd1, &integralAngle, &previousFilteredAngle, angleTd);
 
-//	  HAL_UART_Transmit(&huart5, &accAngle, 4, 1);
-//	  HAL_UART_Transmit(&huart5, &angularVelocity, 4, 1);
+	  HAL_UART_Transmit(&huart5, &accAngle, 4, 1);
+	  HAL_UART_Transmit(&huart5, &X_data[0], 4, 1);
 
 	  HAL_TIM_Base_Stop(&htim11);
 	  cnt2 = __HAL_TIM_GET_COUNTER(&htim11);

@@ -18,9 +18,9 @@
 float Kp0 = 0.65, Ki0 = 22.2, Kd0 = 0.000628;
 
 // middle pid
-float Kp1 =  18.0f;
-float Ki1 =  0.0f;
-float Kd1 = 0.1f;
+float Kp1 = 62.0f;
+float Ki1 = 0.0f;
+float Kd1 = 1.0f;
 
 //slowest pid
 float Kp2 = 0.0, Ki2 = 0.0, Kd2 = 0.0;

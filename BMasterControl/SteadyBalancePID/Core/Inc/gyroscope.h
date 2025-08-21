@@ -20,7 +20,8 @@ extern float previousAngularVelocity;
 extern float measuredVoltage;
 extern float gyroAngle;
 extern float previousGyroAngle;
-extern float gyroTd;
+//extern float gyroTd;
+#define gyroTd 0.01
 extern float gyroAVelocityBias;
 extern float gyroConstant;
 
