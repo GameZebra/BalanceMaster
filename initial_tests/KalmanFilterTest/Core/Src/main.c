@@ -473,7 +473,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	  //speed = calculateSpeed(targetAngle, angle, angularVelocity, Kp1, Ki1, Kd1, &integralAngle, &previousFilteredAngle, angleTd);
 
 	  HAL_UART_Transmit(&huart5, &accAngle, 4, 1);
-//	  HAL_UART_Transmit(&huart5, &angle, 4, 1);
+//	  HAL_UART_Transmit(&huart5, &angle, 4, 1);			// moving average
 	  HAL_UART_Transmit(&huart5, &X_data[0], 4, 1);
 
 

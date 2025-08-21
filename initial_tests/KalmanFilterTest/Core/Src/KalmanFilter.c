@@ -14,17 +14,17 @@ arm_matrix_instance_f32 R;    // measurement noise
 arm_matrix_instance_f32 K;    // Kalman gain
 arm_matrix_instance_f32 H;    // measurement matrix
 
-
+					// [angle, angularVelocity, bias]
 float32_t X_data[STATE_SIZE] = {0, 0, 0};
 float32_t P_data[STATE_SIZE*STATE_SIZE] = {	1, 0, 0,	// covariance P initial guess
 											0, 1, 0,
 											0, 0, 1};
 // process noise Q
-float32_t Q_data[STATE_SIZE*STATE_SIZE] = {	0.0.3, 	0, 			0,			// q_theta
-											0, 		0.55, 	0,			// q_omega
-											0,		0,			0.000001};	// q_bias
+float32_t Q_data[STATE_SIZE*STATE_SIZE] = {	0.3, 	0, 			0,				// q_theta
+											0, 		0.6,	 	0,				// q_omega
+											0,		0,			0.000001};		// q_bias
 //measurement noise R
-float32_t R_data[MEAS_SIZE*MEAS_SIZE] = {	1.2,	0,				//acc noise variance
+float32_t R_data[MEAS_SIZE*MEAS_SIZE] = {	5.5,	0,				//acc noise variance
 										 	0,		0.5};			//gyro noise variance
 
 // measurments matrixes
