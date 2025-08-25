@@ -79,6 +79,11 @@ extern float speed;
 extern int8_t brake;
 extern uint8_t dirL, dirR;
 
+//debug
+extern uint8_t errorRegisterAddress;
+extern uint8_t errorRegisterData;
+
+
 
 void MotorsBrake(UART_HandleTypeDef *huart, int8_t *brake);
 void MotorsOn(UART_HandleTypeDef *huart, int8_t *speed, uint8_t rotation);

@@ -58,6 +58,7 @@ TIM_HandleTypeDef htim5;
 TIM_HandleTypeDef htim8;
 TIM_HandleTypeDef htim10;
 TIM_HandleTypeDef htim11;
+TIM_HandleTypeDef htim13;
 TIM_HandleTypeDef htim14;
 
 UART_HandleTypeDef huart4;
@@ -66,7 +67,7 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
-volatile uint16_t cnt1, cnt2, cnt3;
+volatile uint16_t cnt1, cnt2, cnt3, cnt4;
 
 /* USER CODE END PV */
 
@@ -85,6 +86,7 @@ static void MX_TIM11_Init(void);
 static void MX_TIM5_Init(void);
 static void MX_TIM8_Init(void);
 static void MX_TIM14_Init(void);
+static void MX_TIM13_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -135,6 +137,7 @@ int main(void)
   MX_TIM5_Init();
   MX_TIM8_Init();
   MX_TIM14_Init();
+  MX_TIM13_Init();
   /* USER CODE BEGIN 2 */
 
   KalmanInit();
@@ -143,18 +146,21 @@ int main(void)
   HAL_TIM_Base_Start(&htim8);
   HAL_ADC_Start_IT(&hadc1);
 
+  calculateGyroAVelocityBase(10);
 //  __HAL_TIM_SET_COMPARE(&htim10,TIM_CHANNEL_1, 10); // questionable?
 
   HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_1);
   HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_2);
 
+  __HAL_TIM_SET_COUNTER(&htim3, START_POSITION);				// middle position
   HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_1);
   HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_2);
 
-  HAL_TIM_Base_Start_IT(&htim10);
-  HAL_TIM_Base_Start_IT(&htim14);
+  HAL_TIM_Base_Start_IT(&htim10);	// 10ms
+  HAL_TIM_Base_Start_IT(&htim14);	// 2ms
+  HAL_TIM_Base_Start_IT(&htim13);	// 100ms
 
-  calculateGyroAVelocityBase(10);
+
   //IIR3_Init(&lFilter, b, a);
   //IIR3_Init(&rFilter, b, a);
 
@@ -572,6 +578,37 @@ static void MX_TIM11_Init(void)
 }
 
 /**
+  * @brief TIM13 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM13_Init(void)
+{
+
+  /* USER CODE BEGIN TIM13_Init 0 */
+
+  /* USER CODE END TIM13_Init 0 */
+
+  /* USER CODE BEGIN TIM13_Init 1 */
+
+  /* USER CODE END TIM13_Init 1 */
+  htim13.Instance = TIM13;
+  htim13.Init.Prescaler = 4200;
+  htim13.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim13.Init.Period = 100;
+  htim13.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim13.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim13) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM13_Init 2 */
+
+  /* USER CODE END TIM13_Init 2 */
+
+}
+
+/**
   * @brief TIM14 Initialization Function
   * @param None
   * @retval None
@@ -715,8 +752,8 @@ static void MX_GPIO_Init(void)
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOE_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
@@ -729,11 +766,21 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PE0 PE1 */
-  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1;
+  /*Configure GPIO pin : PC1 */
+  GPIO_InitStruct.Pin = GPIO_PIN_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PE0 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
   /* USER CODE END MX_GPIO_Init_2 */
@@ -773,19 +820,32 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 	}
 	if (htim->Instance == TIM10){
-		__HAL_TIM_SET_COUNTER(&htim11, 0);
-		 HAL_TIM_Base_Start(&htim11);
+		  __HAL_TIM_SET_COUNTER(&htim11, 0);
+	  	  HAL_TIM_Base_Start(&htim11);
 
-	  readAccelerometer(&hspi1);
-	  KalmanPredict();
-	  KalmanUpdate();
-	  speed = calculateSpeed(targetAngle, X_data[0], X_data[1], Kp1, Ki1, Kd1, &integralAngle, &previousFilteredAngle, angleTd);
+	  	  readAccelerometer(&hspi1);
+		  KalmanPredict();
+		  KalmanUpdate();
+		  speed = calculateSpeed(targetAngle, X_data[0], X_data[1], Kp1, Ki1, Kd1, &integralAngle, &previousFilteredAngle, angleTd);
 
-	  HAL_UART_Transmit(&huart5, &accAngle, 4, 1);
-	  HAL_UART_Transmit(&huart5, &X_data[0], 4, 1);
+		  HAL_UART_Transmit(&huart5, &accAngle, 4, 1);
+		  HAL_UART_Transmit(&huart5, &X_data[0], 4, 1);
 
-	  HAL_TIM_Base_Stop(&htim11);
-	  cnt2 = __HAL_TIM_GET_COUNTER(&htim11);
+		  HAL_TIM_Base_Stop(&htim11);
+		  cnt2 = __HAL_TIM_GET_COUNTER(&htim11);
+	}
+	if (htim->Instance == TIM13){
+		  __HAL_TIM_SET_COUNTER(&htim11, 0);
+		  HAL_TIM_Base_Start(&htim11);
+
+		  // todo does the casting work?
+		  currentPosition = __HAL_TIM_GET_COUNTER(&htim3);
+
+		  // TODO PID that gets position -> target angle
+		  targetAngle = CalculateTargetAngle(targetPosition, currentPosition, Kp2, Ki2, Kd2, &integralPosition, &previousSetAngle, positionTd);
+
+		  HAL_TIM_Base_Stop(&htim11);
+		  cnt4 = __HAL_TIM_GET_COUNTER(&htim11);
 	}
 }
 
@@ -807,6 +867,20 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 
 }
 
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+    if (GPIO_Pin == GPIO_PIN_1)   // Check which pin triggered
+    {
+    	  // get error register motor driver
+
+    	  HAL_UART_Transmit(&huart2, &errorRegisterAddress, 1, 1);
+    	  HAL_UART_Receive(&huart2, &errorRegisterData, 1, 1);
+    	  while(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_1) == GPIO_PIN_RESET){
+    		  errorRegisterData;
+    	  }
+    }
+}
 
 
 /* USER CODE END 4 */

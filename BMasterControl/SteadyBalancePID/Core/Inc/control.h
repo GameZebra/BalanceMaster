@@ -15,15 +15,17 @@
 #include "accelerometer.h"
 #include "math.h"
 
+#define START_POSITION 30000
+
+
 // PID constants
 // 0 - fastest; 1 - middle; 2 - slowest
-extern float Kp0, Kp1, Kp2;
+extern float Kp0, Kp1, Kp2, Kp1_slope;
 extern float Ki0, Ki1, Ki2;
 extern float Kd0, Kd1, Kd2;
 
 
 // target
-extern float targetAngle;
 //extern float setPointDelta;
 //extern uint8_t isReady;
 //extern float leftSetup[100];
@@ -47,12 +49,22 @@ extern float controlSpeed;
 //extern float outputOld;
 //extern uint8_t dirChange;
 
+// slow PID
+// slow pid
+extern float maxTargetAngle;
+extern float integralPosition;
+extern float previousSetAngle;
+extern float targetAngle;			// output
+extern uint16_t targetPosition;		// target
+extern uint16_t currentPosition;	// input
+
 // other control variables
 
 
 
 // Sample time
-extern float angleTd;  // 1 ms
+extern float angleTd;  // 10 ms
+extern float positionTd;
 
 
 // debug
@@ -62,6 +74,7 @@ extern float angleTd;  // 1 ms
 
 
 float calculateSpeed(float setpointAngle, float measuredAngle, float measuredAVelocity, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt);
+float PID3(uint16_t setpoint, uint16_t measured, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt);
 float PID2(float setpoint, float measuredAngle, float measuredAVelocity, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt);
 float PID(float setpoint, float measured, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt);
 uint8_t direction(float *speed, float histeresis);
@@ -69,6 +82,6 @@ void controlLimit(float *control);
 void generalLimit(float *control, float limit);
 int8_t motorControl(float setpoint, float measured, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt, uint8_t *rotation);
 
-
+float CalculateTargetAngle(float setPosition, float measuredPosition, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt);
 
 #endif /* INC_CONTROL_H_ */

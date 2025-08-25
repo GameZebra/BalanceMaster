@@ -16,6 +16,10 @@ float speed = 0;
 int8_t brake = 127;
 uint8_t dirL = 0, dirR = 0;
 
+//debug
+uint8_t errorRegisterAddress = 0x82;
+uint8_t errorRegisterData = 0;
+
 
 void MotorsBrake(UART_HandleTypeDef *uart2, int8_t *brake){
 	HAL_UART_Transmit(uart2, &motor0[1], 1, 20);

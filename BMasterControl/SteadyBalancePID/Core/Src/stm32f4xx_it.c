@@ -58,6 +58,7 @@
 extern ADC_HandleTypeDef hadc1;
 extern TIM_HandleTypeDef htim8;
 extern TIM_HandleTypeDef htim10;
+extern TIM_HandleTypeDef htim13;
 extern TIM_HandleTypeDef htim14;
 /* USER CODE BEGIN EV */
 
@@ -202,6 +203,20 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
+  * @brief This function handles EXTI line1 interrupt.
+  */
+void EXTI1_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI1_IRQn 0 */
+
+  /* USER CODE END EXTI1_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
+  /* USER CODE BEGIN EXTI1_IRQn 1 */
+
+  /* USER CODE END EXTI1_IRQn 1 */
+}
+
+/**
   * @brief This function handles ADC1, ADC2 and ADC3 global interrupts.
   */
 void ADC_IRQHandler(void)
@@ -227,6 +242,21 @@ void TIM1_UP_TIM10_IRQHandler(void)
   /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 1 */
 
   /* USER CODE END TIM1_UP_TIM10_IRQn 1 */
+}
+
+/**
+  * @brief This function handles TIM8 update interrupt and TIM13 global interrupt.
+  */
+void TIM8_UP_TIM13_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM8_UP_TIM13_IRQn 0 */
+
+  /* USER CODE END TIM8_UP_TIM13_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim8);
+  HAL_TIM_IRQHandler(&htim13);
+  /* USER CODE BEGIN TIM8_UP_TIM13_IRQn 1 */
+
+  /* USER CODE END TIM8_UP_TIM13_IRQn 1 */
 }
 
 /**
