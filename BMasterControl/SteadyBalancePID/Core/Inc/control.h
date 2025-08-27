@@ -74,7 +74,7 @@ extern float positionTd;
 
 
 float calculateSpeed(float setpointAngle, float measuredAngle, float measuredAVelocity, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt);
-float PID3(uint16_t setpoint, uint16_t measured, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt);
+float PID3(uint16_t setpoint, uint16_t measured, float measuredVelocity, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt);
 float PID2(float setpoint, float measuredAngle, float measuredAVelocity, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt);
 float PID(float setpoint, float measured, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt);
 uint8_t direction(float *speed, float histeresis);
@@ -82,6 +82,6 @@ void controlLimit(float *control);
 void generalLimit(float *control, float limit);
 int8_t motorControl(float setpoint, float measured, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt, uint8_t *rotation);
 
-float CalculateTargetAngle(float setPosition, float measuredPosition, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt);
+float CalculateTargetAngle(uint16_t setPosition, uint16_t measuredPosition, float measuredVelocity, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt);
 
 #endif /* INC_CONTROL_H_ */

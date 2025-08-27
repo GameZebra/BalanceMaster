@@ -15,15 +15,15 @@
 // 0 for the fastest pid; 1 fpr  the middle; 2 for slowest
 
 // fastest pid
-float Kp0 = 0.3, Ki0 = 2, Kd0 = 0.0;
+float Kp0 = 0.2, Ki0 = 1, Kd0 = 0.0;
 
 // middle pid
-float Kp1 = 180.0f, Kp1_slope = 3;
+float Kp1 = 185.0f, Kp1_slope = 40;
 float Ki1 = 0.0f;
 float Kd1 = 1.0f;
 
 //slowest pid
-float Kp2 = 0.001, Ki2 = 0.00006, Kd2 = 0.0;
+float Kp2 = 0.001, Ki2 = 0.00006, Kd2 = 0.0001;
 
 
 // target
@@ -53,7 +53,7 @@ float controlSpeed = 0.0f;
 //uint8_t dirChange = 0;
 
 // slow pid
-float maxTargetAngle = 6.0;
+float maxTargetAngle = 3.0;
 float integralPosition = 0.0f;
 float previousSetAngle = 0.0f;
 float targetAngle = -0.5;				// output
@@ -72,7 +72,7 @@ float positionTd = 0.010f;	// 10 ms
 //float dMAX = 0;
 //float lineFixed = 8;
 //float lineSpeed = 0.3;
-
+uint8_t controlMax = 60;
 
 
 
@@ -82,15 +82,16 @@ float calculateSpeed(float setpointAngle, float measuredAngle, float measuredAVe
 	float Kp_dynamic = error*error* Kp1_slope + Kp;
 //	float Kp_dynamic = error* Kp1_slope + Kp;
 //	float Kp_dynamic = fabs(measuredAngle)* Kp1_slope + Kp;
+//	float Kp_dynamic = measuredAngle*measuredAngle* Kp1_slope + Kp;
 
 	controlSpeed = PID2(setpointAngle, measuredAngle, measuredAVelocity, Kp_dynamic, Ki, Kd, integral, previousMeasurment, dt);
 	return controlSpeed;
 }
 
-float PID3(uint16_t setpoint, uint16_t measured, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt){
+float PID3(uint16_t setpoint, uint16_t measured, float measuredVelocity, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt){
 	float error = setpoint - measured;
 	*integral += error * dt;
-	float derivative = (float)(measured - *previousMeasurment)/dt;
+	float derivative = measuredVelocity;
 	float control = Kp * error + Ki * *integral + Kd * derivative;
 	*previousMeasurment = measured;
 
@@ -154,16 +155,16 @@ int8_t motorControl(float setSpeed, float measuredSpeed, float Kp, float Ki, flo
 	float control = PID(setSpeed, measuredSpeed, Kp, Ki, Kd, integral, previousMeasurment, dt);
 	*rotation = direction(&control, 0);
 //	controlLimit(&control);			// driver limits
-	generalLimit(&control, 100);
-	generalLimit(integral, 127/Ki); // anti-windup
+	generalLimit(&control, controlMax);
+	generalLimit(integral, controlMax/Ki); // anti-windup
 	control = fabs(control);
 	return (int8_t)control;
 }
 
 
 // target update eventually
-float CalculateTargetAngle(float setPosition, float measuredPosition, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt){
-	float control = PID3(setPosition, measuredPosition, Kp, Ki, Kd, integral, previousMeasurment, dt);
+float CalculateTargetAngle(uint16_t setPosition, uint16_t measuredPosition, float measuredVelocity, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt){
+	float control = PID3(setPosition, measuredPosition, measuredVelocity, Kp, Ki, Kd, integral, previousMeasurment, dt);
 	generalLimit(integral, maxTargetAngle/Ki);	// anti-windup
 	generalLimit(&control, maxTargetAngle);		// not to fall too hard
 	return -control;

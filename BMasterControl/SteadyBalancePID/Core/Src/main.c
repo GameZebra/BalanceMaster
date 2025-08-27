@@ -142,11 +142,13 @@ int main(void)
 
   KalmanInit();
 
-  AccelInit(&hspi1);
   HAL_TIM_Base_Start(&htim8);
   HAL_ADC_Start_IT(&hadc1);
 
-  calculateGyroAVelocityBase(10);
+  calculateGyroAVelocityBase(50);
+
+  AccelInit(&hspi1);
+
 //  __HAL_TIM_SET_COMPARE(&htim10,TIM_CHANNEL_1, 10); // questionable?
 
   HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_1);
@@ -842,7 +844,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		  currentPosition = __HAL_TIM_GET_COUNTER(&htim3);
 
 		  // TODO PID that gets position -> target angle
-		  targetAngle = CalculateTargetAngle(targetPosition, currentPosition, Kp2, Ki2, Kd2, &integralPosition, &previousSetAngle, positionTd);
+		  targetAngle = CalculateTargetAngle(targetPosition, currentPosition, rSpeed, Kp2, Ki2, Kd2, &integralPosition, &previousSetAngle, positionTd);
 
 		  HAL_TIM_Base_Stop(&htim11);
 		  cnt4 = __HAL_TIM_GET_COUNTER(&htim11);

@@ -25,7 +25,7 @@ float32_t Q_data[STATE_SIZE*STATE_SIZE] = {	0.4, 	0, 			0,				// q_theta
 											0,		0,			0.000001};		// q_bias
 //measurement noise R
 float32_t R_data[MEAS_SIZE*MEAS_SIZE] = {	7.5,	0,				//acc noise variance
-										 	0,		0.5};			//gyro noise variance
+										 	0,		2.44};			//gyro noise variance
 
 // measurments matrixes
 float32_t H_data[MEAS_SIZE*STATE_SIZE] = {	1, 0, 0,	//H_acc
