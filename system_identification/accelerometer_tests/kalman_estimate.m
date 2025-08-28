@@ -6,13 +6,15 @@ g0 = data0(:,2);
 
 
 data = readmatrix("acc_velocity_normal_work_motors_on.csv");
-%data = readmatrix("acc_velocity_normal_work_no_motors.csv");
+data = readmatrix("acc_velocity_normal_work_no_motors.csv");
+data = readmatrix("data+kalman_vibrations.csv");
+
 
 dt = 0.01;
 
 t = 0:dt:(length(data)-1)*dt;
 accel_angle = data(:,1);
-gyro = data(:,2);
+gyro = data(:,3);
 
 
 
@@ -38,6 +40,7 @@ H_gyro = [0 1 1];  % gyro measures omega + bias
 % Measurement noise (tune these)
 R_acc  = 5;     % accelerometer angle noise variance
 R_gyro = 1.44;     % gyro noise variance
+R = diag([R_acc, R_gyro]);
 
 %R_acc  = var(a0 - mean(a0));     % accelerometer angle noise variance
 %R_gyro = var(g0 - mean(g0));     % gyro noise variance
@@ -74,7 +77,7 @@ end
 %% Plot results
 figure;
 subplot(3,1,1);
-plot(t, accel_angle, 'g', t, x_est(1,:), 'r');
+plot(t, accel_angle, 'g', t, x_est(1,:), 'r', t, x(1,:), 'k');
 legend('Accel angle', 'KF angle');
 ylabel('\theta (rad)');
 
