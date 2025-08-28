@@ -291,12 +291,19 @@ whitch happend yesterday 🙂. To prevent that you need to use 3-5 times faster 
 - 🧠 and after all this the best filter i made was arguably worst than an 10th order moving average ...
 - 💻 implemented anti windup in the pid algorytm
 
+
+
+
 - 🧠 do i need speed regulator at the bottom?
 
 ### For tomorow
 - digital filtration for the gyroscope
+    - make DFT of the colected signal
+    - check if the filter has big phase shift 
 - filtration for the accelerometer
-- make cascade pid control
+    - make DFT of the colected signal
+    - check if the filter has big phase shift 
+- make cascade pid control (position control)
 - make 1d calman
 
 ## TODO
