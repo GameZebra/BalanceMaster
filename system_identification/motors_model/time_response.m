@@ -127,6 +127,18 @@ ylabel('Output')
 title('Step to 800')
 
 
+sys_d = c2d(motor_l_model, 0.002);
+[C_pi,info] = pidtune(sys_d,'PIDF', 450.0)
+T_pi = feedback(C_pi*sys_d, 1);
+%step(T_pi, 80)
+
+t = 0:0.002:0.02;           % time vector
+u = 800 * ones(size(t)); % step input of magnitude 500
+[y, t_out, x] = lsim(T_pi, u, t);
+
+figure(10)
+plot(t_out, y, 'LineWidth', 1.5), grid on, hold on;
+
 sys_d = c2d(motor_r_model, 0.002);
 [C_pi,info] = pidtune(sys_d,'PIDF', 450.0)
 T_pi = feedback(C_pi*sys_d, 1);
