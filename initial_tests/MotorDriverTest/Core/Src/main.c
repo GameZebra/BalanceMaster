@@ -112,7 +112,7 @@ int main(void)
 
   // get error
   command = 0x82;
-  data = 0;  // 1 - 11
+  data = 0; 
   HAL_UART_Transmit(&huart2, &command, 1, 20);
   HAL_UART_Receive(&huart2, &data, 1, 20);
   HAL_Delay(7);
