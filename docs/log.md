@@ -291,10 +291,35 @@ whitch happend yesterday 🙂. To prevent that you need to use 3-5 times faster 
 - 🧠 and after all this the best filter i made was arguably worst than an 10th order moving average ...
 - 💻 implemented anti windup in the pid algorytm
 
+## 📅 July 19-21, 2025
+- 💻 matlab model of working kalman filter 
+- 💻 trynig to add CMSIS DSP library for matrix multiplication on the stm
 
+## 📅 July 22, 2025
+- 💻 working kalman filter on the stm32 
+- 💻 trying different constants for the PIDs
 
+## 📅 July 25, 2025
+- 💻 the robot balances for 19 secs (by accident)
+- 🧠 couldn't make it second time 😭
+
+## 📅 July 26, 2025
+- 🧠 a lot of tries to make the robot balance
+- 😭 (depression)
+
+## 📅 July 27, 2025
+- 💻 made a matlab vizualization of the control variables
+- 🧠 the motors slow down when they aproach the target angle... and by the time they figure out they have to start speeding again it is too late and the robot is not recoverable
+
+## 📅 July 28, 2025
+- 💻 made 4th order Kalman filter trying to evaluate the angle offset where the robot is stationary
+    - 🧠 didn't work as good as I expected. There isn't a good way to model this ofset
+- 🧠 the regulator at the bottom only makes the controll harder because it isn't fast enoug and the dynamics of the motor show up. I can either remove it, or make it fast enough.
+    - 🧠 if i go on the rout of removing it i may try adding one or two fast regulators that equlize the dynamics of both motors, for example some K < 1 in front of the faster one 
+    - 🧠 i would probably need around 80mF capacitors at the output to make the fast regulator work
 
 - 🧠 do i need speed regulator at the bottom?
+    - 🧠 yes atleast to equlize the time response of the motors
 
 ### For tomorow
 - digital filtration for the gyroscope
