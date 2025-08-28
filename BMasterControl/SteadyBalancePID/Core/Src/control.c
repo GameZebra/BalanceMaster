@@ -15,15 +15,16 @@
 // 0 for the fastest pid; 1 fpr  the middle; 2 for slowest
 
 // fastest pid
-float Kp0 = 0.2, Ki0 = 1, Kd0 = 0.0;
+float Kp00 = 0.1, 	Ki00 = 0, Kd00 = 0.0;		// right motor
+float Kp01 = 0.108, Ki01 = 0, Kd01 = 0.0;		// left motor
 
 // middle pid
-float Kp1 = 195.0f, Kp1_slope = 40;
+float Kp1 = 150.0f, Kp1_slope = 0;
 float Ki1 = 0.0f;
 float Kd1 = 1.0f;
 
 //slowest pid
-float Kp2 = 0.001, Ki2 = 0.00006, Kd2 = 0.0001;
+float Kp2 = 0.001, Ki2 = 0.0, Kd2 = 0.0;
 
 
 // target

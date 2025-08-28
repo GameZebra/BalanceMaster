@@ -15,26 +15,29 @@ arm_matrix_instance_f32 K;    // Kalman gain
 arm_matrix_instance_f32 H;    // measurement matrix
 
 					// [angle, angularVelocity, bias]
-float32_t X_data[STATE_SIZE] = {0, 0, 0};
-float32_t P_data[STATE_SIZE*STATE_SIZE] = {	1, 0, 0,	// covariance P initial guess
-											0, 1, 0,
-											0, 0, 1};
+float32_t X_data[STATE_SIZE] = {0, 0, 0, 0};
+float32_t P_data[STATE_SIZE*STATE_SIZE] = {	1, 0, 0, 0,	// covariance P initial guess
+											0, 1, 0, 0,
+											0, 0, 1, 0,
+											0, 0, 0, 0.1};
 // process noise Q
-float32_t Q_data[STATE_SIZE*STATE_SIZE] = {	0.4, 	0, 			0,				// q_theta
-											0, 		0.6,	 	0,				// q_omega
-											0,		0,			0.000001};		// q_bias
+float32_t Q_data[STATE_SIZE*STATE_SIZE] = {	0.4, 	0, 			0,			0,			// q_theta
+											0, 		0.6,	 	0,			0,			// q_omega
+											0,		0,			0.000001,	0,			// q_gyro_bias
+											0,		0,			0,			0.000001};	// q_angle_bias
 //measurement noise R
 float32_t R_data[MEAS_SIZE*MEAS_SIZE] = {	7.5,	0,				//acc noise variance
 										 	0,		2.44};			//gyro noise variance
 
 // measurments matrixes
-float32_t H_data[MEAS_SIZE*STATE_SIZE] = {	1, 0, 0,	//H_acc
-											0, -1, 1};	//H_gyro
+float32_t H_data[MEAS_SIZE*STATE_SIZE] = {	1, 0, 0, -1,		//H_acc
+											0, -1, 1, 0};	//H_gyro
 
 // state transition matrix A
-float32_t A_data[STATE_SIZE*STATE_SIZE] = {	1, gyroTd, 0,
-											0, 1, 0,
-											0, 0, 1};
+float32_t A_data[STATE_SIZE*STATE_SIZE] = {	1, gyroTd, 0, 0,
+											0, 1, 0, 0,
+											0, 0, 1, 0,
+											0, 0, 0, 1};
 // a priori
 arm_matrix_instance_f32 A;
 arm_matrix_instance_f32 X_pred;
@@ -51,7 +54,7 @@ arm_matrix_instance_f32 HT, HP, HPHT, HPHT_plus_R, HPHT_plus_R_inv;
 float32_t HT_data[STATE_SIZE*MEAS_SIZE], HP_data[STATE_SIZE*MEAS_SIZE];
 float32_t HPHT_data[MEAS_SIZE*MEAS_SIZE], HPHT_plus_R_data[MEAS_SIZE*MEAS_SIZE];
 float32_t HPHT_plus_R_inv_data[MEAS_SIZE*MEAS_SIZE];
-float32_t K_data[STATE_SIZE*MEAS_SIZE] = {0,0,0,0,0,0};
+float32_t K_data[STATE_SIZE*MEAS_SIZE] = {0,0,0,0,0,0,0,0};
 
 // X = X_pred + K*(z - H*X_pred)
 float32_t z_data[MEAS_SIZE] = {0, 0};

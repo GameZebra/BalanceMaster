@@ -15,7 +15,7 @@
 #include "gyroscope.h"
 
 
-#define STATE_SIZE 3
+#define STATE_SIZE 4	// [angle, angularVelocity, angularVelocityBias, angleBias]
 #define MEAS_SIZE 2
 
 extern arm_matrix_instance_f32 X;    // state vector [theta; omega; bias]
