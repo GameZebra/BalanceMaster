@@ -18,7 +18,7 @@
 float Kp0 = 0.2, Ki0 = 1, Kd0 = 0.0;
 
 // middle pid
-float Kp1 = 185.0f, Kp1_slope = 40;
+float Kp1 = 195.0f, Kp1_slope = 40;
 float Ki1 = 0.0f;
 float Kd1 = 1.0f;
 
@@ -53,7 +53,7 @@ float controlSpeed = 0.0f;
 //uint8_t dirChange = 0;
 
 // slow pid
-float maxTargetAngle = 3.0;
+float maxTargetAngle = 1.5;
 float integralPosition = 0.0f;
 float previousSetAngle = 0.0f;
 float targetAngle = -0.5;				// output
@@ -76,7 +76,7 @@ uint8_t controlMax = 60;
 
 
 
-float calculateSpeed(float setpointAngle, float measuredAngle, float measuredAVelocity, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt){ // ma not need rotation
+float calculateTargetSpeed(float setpointAngle, float measuredAngle, float measuredAVelocity, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt){ // ma not need rotation
 	float error = fabs(setpointAngle - measuredAngle);
 //	generalLimit(&error, 3.0);
 	float Kp_dynamic = error*error* Kp1_slope + Kp;
@@ -85,6 +85,7 @@ float calculateSpeed(float setpointAngle, float measuredAngle, float measuredAVe
 //	float Kp_dynamic = measuredAngle*measuredAngle* Kp1_slope + Kp;
 
 	controlSpeed = PID2(setpointAngle, measuredAngle, measuredAVelocity, Kp_dynamic, Ki, Kd, integral, previousMeasurment, dt);
+	generalLimit(&controlSpeed, 1000);
 	return controlSpeed;
 }
 

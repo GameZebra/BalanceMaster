@@ -828,10 +828,27 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	  	  readAccelerometer(&hspi1);
 		  KalmanPredict();
 		  KalmanUpdate();
-		  speed = calculateSpeed(targetAngle, X_data[0], X_data[1], Kp1, Ki1, Kd1, &integralAngle, &previousFilteredAngle, angleTd);
+		  speed = calculateTargetSpeed(targetAngle, X_data[0], X_data[1], Kp1, Ki1, Kd1, &integralAngle, &previousFilteredAngle, angleTd);
+
+
+		  float targetPositionf = (float)targetPosition;
+		  HAL_UART_Transmit(&huart5, &targetPositionf, 4, 1);
+		  float currentPositionf = (float)currentPosition;
+		  HAL_UART_Transmit(&huart5, &currentPositionf, 4, 1);
+		  HAL_UART_Transmit(&huart5, &targetAngle, 4, 1);
+		  HAL_UART_Transmit(&huart5, &X_data[0], 4, 1);
+		  HAL_UART_Transmit(&huart5, &X_data[1], 4, 1);
 
 		  HAL_UART_Transmit(&huart5, &accAngle, 4, 1);
-		  HAL_UART_Transmit(&huart5, &X_data[0], 4, 1);
+		  HAL_UART_Transmit(&huart5, &angularVelocity, 4, 1);
+
+		  HAL_UART_Transmit(&huart5, &speed, 4, 1);
+		  HAL_UART_Transmit(&huart5, &rSpeed, 4, 1);
+		  float rightCtrlf = (float)rightCtrl;
+		  if (dirR == 2){
+			  rightCtrlf *= -1;
+		  }
+		  HAL_UART_Transmit(&huart5, &rightCtrlf, 4, 1);
 
 		  HAL_TIM_Base_Stop(&htim11);
 		  cnt2 = __HAL_TIM_GET_COUNTER(&htim11);

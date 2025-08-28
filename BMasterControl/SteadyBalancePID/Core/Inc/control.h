@@ -73,7 +73,7 @@ extern float positionTd;
 //extern float lineSpeed;
 
 
-float calculateSpeed(float setpointAngle, float measuredAngle, float measuredAVelocity, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt);
+float calculateTargetSpeed(float setpointAngle, float measuredAngle, float measuredAVelocity, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt);
 float PID3(uint16_t setpoint, uint16_t measured, float measuredVelocity, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt);
 float PID2(float setpoint, float measuredAngle, float measuredAVelocity, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt);
 float PID(float setpoint, float measured, float Kp, float Ki, float Kd, float *integral, float *previousMeasurment, float dt);
