@@ -321,6 +321,14 @@ whitch happend yesterday 🙂. To prevent that you need to use 3-5 times faster 
 - 🧠 do i need speed regulator at the bottom?
     - 🧠 yes atleast to equlize the time response of the motors
 
+## 📅 July 28, 2025
+- 🛒 I ordered capaitors to possibly improve the power characterisics of the robot
+- 🧠 Talked about the robot controll with my mentor and it seems i have structural problem not only parameter 😢
+- 🧠 I have problem with the Angular Velocity. The gyro has some bias (I don't know from where) and it may (absolutely) interfieres with my contol. The kalman filter cant fix it. It becomes internaly unstable.
+    - 🧠 I can try filtering the angular velocity and adding the bias as a state. to improve the angular velocity estimation.
+- :page_facing_up: I got Plamen's thesis to use as a template.
+
+
 ### For tomorow
 - digital filtration for the gyroscope
     - make DFT of the colected signal
