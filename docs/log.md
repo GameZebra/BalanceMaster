@@ -329,6 +329,23 @@ whitch happend yesterday 🙂. To prevent that you need to use 3-5 times faster 
 - :page_facing_up: I got Plamen's thesis to use as a template.
 
 
+## 📅 July 28, 2025
+- :page_facing_up: for the documentation: 
+    - 12V DC brushsed motors with 29:1 gearboxes
+    - magnetic quadrature encoders for measuring wheels angles
+    - single precision calculations
+    - in the example they are using Ts= 0.005 s
+- :page_facing_up: template for the thesis
+- :page_facing_up: plan conspect for the writing
+
+### to ask
+- what do they get when integrating 3 times angle?
+- don't they get the speed by derivative of an angle?
+- why double intgration is not desirable
+
+
+
+
 ### For tomorow
 - digital filtration for the gyroscope
     - make DFT of the colected signal
